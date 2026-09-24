@@ -1,10 +1,13 @@
 name: Release
 
-# Builds, signs, verifies and publishes Henkan when a version tag is pushed:
-#   git tag v0.0.1 && git push origin v0.0.1
+# Builds, signs, tests and publishes Henkan when a version tag is pushed:
+#   git tag v0.0.2 && git push origin v0.0.2
 # The tag must match <Version> in Directory.Build.props and the package
 # version in Package.appxmanifest, and .github/release-notes/<tag>.md must
 # exist. Signing uses the RELEASE_PFX_BASE64 and RELEASE_PFX_PASSWORD secrets.
+#
+# The release carries two files: Henkan-<version>-Setup.exe, the installer
+# for everyone, and Henkan-<version>-x64.msix for deployment tools.
 
 on:
   push:
@@ -63,8 +66,11 @@ jobs:
           & $ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc=size=320x240 -frames:v 1 "$samples\pic.png"
           Set-Content "$samples\note.txt" 'Henkan release check'
 
+          # A PDF with real text in it, so extracting text has something to find.
+          Set-Content "$samples\page.ps" "%!PS`n/Helvetica findfont 24 scalefont setfont`n72 700 moveto (Henkan release check) show`nshowpage"
+
           $cli = 'src\Henkan.Cli\bin\x64\Release\net10.0-windows\win-x64\henkanc.exe'
-          & $cli convert "$samples\pic.png" --target imagemagick/pdf
+          & $cli convert "$samples\page.ps" --target ghostscript/pdf
           if ($LASTEXITCODE -ne 0) { throw 'Could not make the PDF sample.' }
 
           foreach ($tool in 'ffmpeg/', 'imagemagick/', 'ghostscript/', 'sevenzip/') {
@@ -72,18 +78,50 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "A $tool conversion failed." }
           }
 
-      - name: Assemble the release files
+      - name: Build the installer
         shell: pwsh
         run: |
           $folder = Get-ChildItem artifacts -Directory -Filter 'Henkan.App_*_x64_Test' | Select-Object -First 1
           if (-not $folder) { throw 'No package folder under artifacts.' }
-          $name = "Henkan-$env:VERSION-x64"
-          New-Item -ItemType Directory -Force release | Out-Null
-          Compress-Archive -Path "$($folder.FullName)\*" -DestinationPath "release\$name.zip"
-          Copy-Item (Get-ChildItem $folder.FullName -Filter *.msix | Select-Object -First 1).FullName "release\$name.msix"
-          Copy-Item (Get-ChildItem $folder.FullName -Filter *.cer | Select-Object -First 1).FullName "release\Henkan-signing-certificate.cer"
-          Get-ChildItem release | ForEach-Object { "{0}  {1}" -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name } | Set-Content release\SHA256SUMS.txt
+
+          $payload = Join-Path $env:RUNNER_TEMP 'payload'
+          New-Item -ItemType Directory -Force "$payload\Dependencies" | Out-Null
+          Copy-Item (Get-ChildItem $folder.FullName -Filter *.msix | Select-Object -First 1).FullName "$payload\Henkan.msix"
+          Copy-Item (Get-ChildItem $folder.FullName -Filter *.cer | Select-Object -First 1).FullName "$payload\Henkan.cer"
+          Get-ChildItem "$($folder.FullName)\Dependencies\x64" -Filter *.msix | Copy-Item -Destination "$payload\Dependencies"
+          if (-not (Get-ChildItem "$payload\Dependencies" -Filter *.msix)) { throw 'No x64 runtime packages in the package output.' }
+
+          $thumbprint = (New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 "$payload\Henkan.cer").Thumbprint
+
+          choco install innosetup -y --no-progress | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { throw 'Inno Setup did not install.' }
+
+          & $iscc /Q "/DAppVersion=$env:VERSION" "/DPayload=$payload" "/DThumbprint=$thumbprint" installer\Henkan.iss
+          if ($LASTEXITCODE -ne 0) { throw 'The installer did not build.' }
+
+          Copy-Item "$payload\Henkan.msix" "release\Henkan-$env:VERSION-x64.msix"
           Get-ChildItem release | Format-Table Name, Length
+
+      - name: Install and uninstall with the installer
+        shell: pwsh
+        run: |
+          $setup = "release\Henkan-$env:VERSION-Setup.exe"
+          $log = Join-Path $env:RUNNER_TEMP 'setup.log'
+          $process = Start-Process $setup -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=`"$log`"" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { Get-Content $log; throw "Setup exited with $($process.ExitCode)." }
+
+          $package = Get-AppxPackage -Name MyDrift.Henkan
+          if (-not $package) { Get-Content $log; throw 'Setup finished but Henkan is not installed.' }
+          "Installed $($package.PackageFullName)"
+
+          $uninstaller = Get-ChildItem "$env:ProgramFiles\Henkan" -Filter 'unins*.exe' | Select-Object -First 1
+          $process = Start-Process $uninstaller.FullName -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Uninstall exited with $($process.ExitCode)." }
+
+          Start-Sleep -Seconds 5
+          if (Get-AppxPackage -Name MyDrift.Henkan) { throw 'Uninstall finished but Henkan is still installed.' }
+          'Uninstalled cleanly.'
 
       - name: Publish the release
         shell: pwsh
@@ -91,5 +129,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = '${{ github.ref_name }}'
-          gh release create $tag --title "Henkan $env:VERSION" --notes-file ".github/release-notes/$tag.md" (Get-ChildItem release).FullName
+          $notes = Join-Path $env:RUNNER_TEMP 'notes.md'
+          Copy-Item ".github/release-notes/$tag.md" $notes
+          Add-Content $notes "`n## Checksums (SHA-256)`n"
+          Get-ChildItem release | ForEach-Object { Add-Content $notes "- ``$($_.Name)``: ``$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())``" }
+
+          gh release create $tag --title "Henkan $env:VERSION" --notes-file $notes (Get-ChildItem release).FullName
           if ($LASTEXITCODE -ne 0) { throw 'Could not publish the release.' }

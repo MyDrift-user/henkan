@@ -5,8 +5,8 @@
 .DESCRIPTION
     Reads tools\deps.json, downloads every tool from its upstream address,
     checks it against the pinned SHA-256, downloads its source archives, and
-    uploads all of it to the release named by "mirror", creating the release
-    when it does not exist yet. A SHA256SUMS.txt file lists every file.
+    uploads all of it to the repository and release named by "mirror",
+    creating the release when it does not exist yet. A SHA256SUMS.txt file lists every file.
 
     Two reasons for the mirror. Upstream build services delete old builds, so
     a release built next month would otherwise fail to download the tools it
@@ -14,24 +14,18 @@
     Henkan's package, which obliges whoever distributes it to make their source
     available; the mirror keeps the exact source next to the exact binaries.
 
-    Meant for the "Mirror bundled tools" workflow, which has the GitHub CLI
-    and a token. Runs locally too, given `gh auth login`.
-
-.PARAMETER Repository
-    owner/name of the repository to publish to.
+    Meant for the workflow in the mirror repository, which has the GitHub CLI
+    and a token for it. Runs locally too, given `gh auth login`.
 #>
 [CmdletBinding()]
-param(
-    [string]$Repository = $env:GITHUB_REPOSITORY
-)
+param()
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
-if (-not $Repository) { throw 'Pass -Repository owner/name.' }
-
 $deps = Get-Content (Join-Path $PSScriptRoot 'deps.json') -Raw | ConvertFrom-Json
-$tag = $deps.mirror
+$Repository = $deps.mirror.repository
+$tag = $deps.mirror.tag
 $work = Join-Path ([System.IO.Path]::GetTempPath()) "henkan-mirror-$tag"
 New-Item -ItemType Directory -Force $work | Out-Null
 

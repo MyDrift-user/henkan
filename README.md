@@ -30,11 +30,13 @@ that only ever offers what makes sense for the file you clicked.
 
 ## Install
 
-Download the latest **Henkan-*version*-x64.zip** from
-[Releases](https://github.com/MyDrift-user/henkan/releases), unzip it, right-click
-**Install.ps1** and choose **Run with PowerShell**. Windows asks once to trust Henkan's
-signing certificate, then installs it. Right-click any file afterwards and pick
-**Henkan**.
+Download **Henkan-*version*-Setup.exe** from
+[Releases](https://github.com/MyDrift-user/henkan/releases) and run it. Windows asks once
+for administrator rights to trust Henkan's signing certificate, then installs it for your
+account. Right-click any file afterwards and pick **Henkan**. It is removed under
+**Settings > Apps** like any other app.
+
+For deployment tools such as Intune, each release also has the plain `.msix` package.
 
 ## Highlights
 
@@ -143,11 +145,12 @@ Get-ChildItem .\artifacts -Recurse -Filter *.msix | ForEach-Object { Add-AppxPac
 `tools\fetch-deps.ps1` downloads the pinned FFmpeg, Ghostscript and 7-Zip builds listed
 in `tools\deps.json`, checks their SHA-256 and places them under `build\tools\`. Nothing
 from there is committed. The builds, and their source code, are kept in the
-[Bundled tools release](https://github.com/MyDrift-user/henkan/releases/tag/tools-2026-09),
-because the services that build them delete old versions.
+[henkan-bundled-tools](https://github.com/MyDrift-user/henkan-bundled-tools/releases/tag/tools-2026-09)
+repository, because the services that build them delete old versions.
 
 Pushing a tag such as `v0.0.2` makes the Release workflow build, sign and test the
-package, convert real files with every bundled tool, and publish it.
+package, convert real files with every bundled tool, build the installer, install and
+uninstall it once, and publish the installer and the package.
 
 To work on the app without packaging it (no context menu, no bundled tools):
 

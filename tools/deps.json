@@ -1,13 +1,16 @@
 {
-  "$comment": "Bundled third-party tools. Each binary is mirrored, together with its source code, to the GitHub release named in 'mirror' (see tools/mirror-tools.ps1), and tools/fetch-deps.ps1 downloads it from there, verifies sha256 and extracts only the listed files into build/tools/<name>/. Upstream build services delete old builds, so building from the mirror is what keeps a release reproducible and its source available.",
-  "mirror": "tools-2026-09",
+  "$comment": "Bundled third-party tools. Each binary is mirrored, together with its source code, to the release named in 'mirror' (see tools/mirror-tools.ps1), and tools/fetch-deps.ps1 downloads it from there, verifies sha256 and extracts only the listed files into build/tools/<name>/. Upstream build services delete old builds, so building from the mirror is what keeps a release reproducible and its source available.",
+  "mirror": {
+    "repository": "MyDrift-user/henkan-bundled-tools",
+    "tag": "tools-2026-09"
+  },
   "tools": [
     {
       "name": "ffmpeg",
       "version": "9.0.2 (n9.0.2-3-ga5923073bf, BtbN win64-gpl build)",
       "kind": "zip",
       "file": "ffmpeg-n9.0.2-3-ga5923073bf-win64-gpl-9.0.zip",
-      "url": "https://github.com/MyDrift-user/henkan/releases/download/tools-2026-09/ffmpeg-n9.0.2-3-ga5923073bf-win64-gpl-9.0.zip",
+      "url": "https://github.com/MyDrift-user/henkan-bundled-tools/releases/download/tools-2026-09/ffmpeg-n9.0.2-3-ga5923073bf-win64-gpl-9.0.zip",
       "upstream": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-23-14-55/ffmpeg-n9.0.2-3-ga5923073bf-win64-gpl-9.0.zip",
       "sha256": "fdea132b8059ba9dfd6c1ce05bd831a85e665705f03e50162ae2fe599223b5ae",
       "files": [
@@ -31,7 +34,7 @@
       "version": "10.06.0",
       "kind": "nsis",
       "file": "gs10060w64.exe",
-      "url": "https://github.com/MyDrift-user/henkan/releases/download/tools-2026-09/gs10060w64.exe",
+      "url": "https://github.com/MyDrift-user/henkan-bundled-tools/releases/download/tools-2026-09/gs10060w64.exe",
       "upstream": "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10060/gs10060w64.exe",
       "sha256": "8d552205c0fe87a16bac2f377c8a1b090cfcbc610db7c281bd6a646b39c9c468",
       "files": [
@@ -52,7 +55,7 @@
       "version": "25.01",
       "kind": "msi",
       "file": "7z2501-x64.msi",
-      "url": "https://github.com/MyDrift-user/henkan/releases/download/tools-2026-09/7z2501-x64.msi",
+      "url": "https://github.com/MyDrift-user/henkan-bundled-tools/releases/download/tools-2026-09/7z2501-x64.msi",
       "upstream": "https://www.7-zip.org/a/7z2501-x64.msi",
       "sha256": "e7eb0b7ed5efa4e087b7b17f191797f7af5b7f442d1290c66f3a21777005ef57",
       "files": [
