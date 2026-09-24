@@ -28,6 +28,14 @@ best: FFmpeg, ImageMagick, Ghostscript, 7-Zip, Microsoft Office and LibreOffice.
 adds is one place to decide which conversions you want, with which settings, and a menu
 that only ever offers what makes sense for the file you clicked.
 
+## Install
+
+Download the latest **Henkan-*version*-x64.zip** from
+[Releases](https://github.com/MyDrift-user/henkan/releases), unzip it, right-click
+**Install.ps1** and choose **Run with PowerShell**. Windows asks once to trust Henkan's
+signing certificate, then installs it. Right-click any file afterwards and pick
+**Henkan**.
+
 ## Highlights
 
 - **Right where you need it.** A single **Henkan** entry in the Windows 11 context menu,
@@ -129,12 +137,17 @@ development with C++" workload).
 .\build.ps1 -FetchDeps -Package -CertificatePassword henkan
 
 # Install it
-Add-AppxPackage .\artifacts\Henkan.App_0.1.0.0_x64_Test\Henkan.App_0.1.0.0_x64.msix
+Get-ChildItem .\artifacts -Recurse -Filter *.msix | ForEach-Object { Add-AppxPackage $_.FullName }
 ```
 
 `tools\fetch-deps.ps1` downloads the pinned FFmpeg, Ghostscript and 7-Zip builds listed
 in `tools\deps.json`, checks their SHA-256 and places them under `build\tools\`. Nothing
-from there is committed.
+from there is committed. The builds, and their source code, are kept in the
+[Bundled tools release](https://github.com/MyDrift-user/henkan/releases/tag/tools-2026-09),
+because the services that build them delete old versions.
+
+Pushing a tag such as `v0.0.2` makes the Release workflow build, sign and test the
+package, convert real files with every bundled tool, and publish it.
 
 To work on the app without packaging it (no context menu, no bundled tools):
 

@@ -11,7 +11,7 @@
     <Company>MyDrift</Company>
     <Authors>MyDrift</Authors>
     <Copyright>Copyright (C) 2026 MyDrift</Copyright>
-    <Version>0.1.0</Version>
+    <Version>0.0.1</Version>
     <RepositoryUrl>https://github.com/MyDrift-user/henkan</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>

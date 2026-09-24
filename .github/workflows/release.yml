@@ -1,0 +1,95 @@
+name: Release
+
+# Builds, signs, verifies and publishes Henkan when a version tag is pushed:
+#   git tag v0.0.1 && git push origin v0.0.1
+# The tag must match <Version> in Directory.Build.props and the package
+# version in Package.appxmanifest, and .github/release-notes/<tag>.md must
+# exist. Signing uses the RELEASE_PFX_BASE64 and RELEASE_PFX_PASSWORD secrets.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Check the version
+        shell: pwsh
+        run: |
+          $tag = '${{ github.ref_name }}'
+          $version = $tag.TrimStart('v')
+          $props = [xml](Get-Content Directory.Build.props)
+          $declared = @($props.Project.PropertyGroup.Version | Where-Object { $_ })[0]
+          $manifest = [xml](Get-Content src/Henkan.App/Package.appxmanifest)
+          $package = $manifest.Package.Identity.Version
+          if ($declared -ne $version) { throw "The tag says $version but Directory.Build.props says $declared." }
+          if ($package -ne "$version.0") { throw "The tag says $version but the package manifest says $package." }
+          if (-not (Test-Path ".github/release-notes/$tag.md")) { throw "Release notes .github/release-notes/$tag.md are missing." }
+          "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Restore the signing certificate
+        shell: pwsh
+        env:
+          PFX: ${{ secrets.RELEASE_PFX_BASE64 }}
+        run: |
+          New-Item -ItemType Directory -Force build | Out-Null
+          [IO.File]::WriteAllBytes("$PWD\build\release.pfx", [Convert]::FromBase64String($env:PFX))
+
+      - name: Build, test and package
+        shell: pwsh
+        env:
+          PFX_PASSWORD: ${{ secrets.RELEASE_PFX_PASSWORD }}
+        run: ./build.ps1 -FetchDeps -Package -CertificatePath build\release.pfx -CertificatePassword $env:PFX_PASSWORD
+
+      - name: Convert real files with every bundled tool
+        shell: pwsh
+        run: |
+          $samples = Join-Path $env:RUNNER_TEMP 'samples'
+          New-Item -ItemType Directory -Force $samples | Out-Null
+          $ffmpeg = 'build\tools\ffmpeg\ffmpeg.exe'
+          & $ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc=size=640x360:rate=25 -f lavfi -i sine=frequency=440 -t 2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "$samples\clip.mp4"
+          & $ffmpeg -hide_banner -loglevel error -f lavfi -i sine=frequency=440 -t 2 "$samples\tone.wav"
+          & $ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc=size=320x240 -frames:v 1 "$samples\pic.png"
+          Set-Content "$samples\note.txt" 'Henkan release check'
+
+          $cli = 'src\Henkan.Cli\bin\x64\Release\net10.0-windows\win-x64\henkanc.exe'
+          & $cli convert "$samples\pic.png" --target imagemagick/pdf
+          if ($LASTEXITCODE -ne 0) { throw 'Could not make the PDF sample.' }
+
+          foreach ($tool in 'ffmpeg/', 'imagemagick/', 'ghostscript/', 'sevenzip/') {
+            & $cli verify --samples $samples --target $tool
+            if ($LASTEXITCODE -ne 0) { throw "A $tool conversion failed." }
+          }
+
+      - name: Assemble the release files
+        shell: pwsh
+        run: |
+          $folder = Get-ChildItem artifacts -Directory -Filter 'Henkan.App_*_x64_Test' | Select-Object -First 1
+          if (-not $folder) { throw 'No package folder under artifacts.' }
+          $name = "Henkan-$env:VERSION-x64"
+          New-Item -ItemType Directory -Force release | Out-Null
+          Compress-Archive -Path "$($folder.FullName)\*" -DestinationPath "release\$name.zip"
+          Copy-Item (Get-ChildItem $folder.FullName -Filter *.msix | Select-Object -First 1).FullName "release\$name.msix"
+          Copy-Item (Get-ChildItem $folder.FullName -Filter *.cer | Select-Object -First 1).FullName "release\Henkan-signing-certificate.cer"
+          Get-ChildItem release | ForEach-Object { "{0}  {1}" -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $_.Name } | Set-Content release\SHA256SUMS.txt
+          Get-ChildItem release | Format-Table Name, Length
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = '${{ github.ref_name }}'
+          gh release create $tag --title "Henkan $env:VERSION" --notes-file ".github/release-notes/$tag.md" (Get-ChildItem release).FullName
+          if ($LASTEXITCODE -ne 0) { throw 'Could not publish the release.' }

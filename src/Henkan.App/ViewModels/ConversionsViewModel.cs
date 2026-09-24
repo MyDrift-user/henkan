@@ -35,7 +35,7 @@ public sealed class BackendRow(IConversionBackend backend)
 
     public string Status => this.IsAvailable
         ? this.Backend.Availability.ResolvedPath ?? $"Ready ({this.Backend.Availability.Version})"
-        : this.Backend.Availability.Reason ?? "Not available.";
+        : ToolStatus.Explain(this.Backend);
 }
 
 /// <summary>
@@ -1286,7 +1286,7 @@ public sealed partial class ConversionsViewModel : ObservableObject
 
         AppServices.SaveSettings(settings with { ToolPaths = paths });
         await AppServices.ReloadBackendsAsync();
-        this.StatusMessage = "Back to the bundled copy or PATH.";
+        this.StatusMessage = "Henkan finds the program by itself again.";
     }
 
     [RelayCommand]

@@ -3,6 +3,7 @@ using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Henkan.App.Services;
+using Henkan.Core.Backends;
 using Henkan.Core.Settings;
 
 namespace Henkan.App.ViewModels;
@@ -93,11 +94,11 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public string DataFolder => HenkanPaths.Root;
 
-    public string ToolsFolder => Path.Combine(AppContext.BaseDirectory, "tools");
-
-    public string ToolsHint => Directory.Exists(this.ToolsFolder)
-        ? "Bundled tools were found next to the application."
-        : "No bundled tools next to the application. Run tools\\fetch-deps.ps1 in the repository before building, install the tools and put them on PATH, or choose an executable per tool on the Conversions page.";
+    /// <summary>Every tool Henkan can use, and whether this computer has it.</summary>
+    public IReadOnlyList<ToolStatus> Tools { get; } = [.. AppServices.Registry.Backends
+        .Where(b => b.Definition.Kind != BackendKind.Pipeline)
+        .OrderBy(b => b.Definition.Name, StringComparer.CurrentCultureIgnoreCase)
+        .Select(b => new ToolStatus(b))];
 
     public int ProcessorCount => Environment.ProcessorCount;
 

@@ -57,7 +57,7 @@ public sealed class OfficeBackend : IConversionBackend
         this.Availability = found.Count > 0
             ? BackendAvailability.Available(null, string.Join(", ", found))
             : BackendAvailability.Unavailable(
-                "Microsoft Office is not installed. Use the LibreOffice backend instead, or install Office.");
+                "Microsoft Office is not installed. Document conversions use LibreOffice instead when it is installed.");
 
         return Task.FromResult(this.Availability);
     }
@@ -404,8 +404,10 @@ public sealed class OfficeBackend : IConversionBackend
 
     private static dynamic CreateApplication(string progId, OwnedProcesses owned)
     {
+        string product = "Microsoft " + progId.Split('.')[0];
+
         Type type = Type.GetTypeFromProgID(progId)
-            ?? throw new ConversionFailedException($"{progId} is not registered on this machine.");
+            ?? throw new ConversionFailedException($"{product} is not installed.");
 
         string image = progId.Split('.')[0] switch
         {
@@ -417,7 +419,7 @@ public sealed class OfficeBackend : IConversionBackend
         HashSet<int> before = Running(image);
 
         object application = Activator.CreateInstance(type)
-            ?? throw new ConversionFailedException($"{progId} could not be started.");
+            ?? throw new ConversionFailedException($"{product} could not be started.");
 
         owned.Add(Running(image).Except(before));
         return application;

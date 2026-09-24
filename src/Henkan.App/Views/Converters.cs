@@ -11,13 +11,13 @@ public sealed partial class StateToGlyphConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language) => value switch
     {
-        ConversionState.Queued => "",
-        ConversionState.Running => "",
-        ConversionState.Succeeded => "",
-        ConversionState.Skipped => "",
-        ConversionState.Failed => "",
-        ConversionState.Cancelled => "",
-        _ => "",
+        ConversionState.Queued => "\uE823",
+        ConversionState.Running => "\uE768",
+        ConversionState.Succeeded => "\uE73E",
+        ConversionState.Skipped => "\uE8D9",
+        ConversionState.Failed => "\uEA39",
+        ConversionState.Cancelled => "\uE711",
+        _ => "\uE9CE",
     };
 
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();

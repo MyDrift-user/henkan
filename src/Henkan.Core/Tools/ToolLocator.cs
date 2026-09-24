@@ -71,7 +71,7 @@ public sealed class ToolLocator
         {
             return File.Exists(configured)
                 ? new ToolResolution(configured, ToolSource.UserConfigured, null)
-                : new ToolResolution(null, ToolSource.None, $"The configured path \"{configured}\" does not exist.");
+                : new ToolResolution(null, ToolSource.None, $"The program chosen for it, \"{configured}\", no longer exists.");
         }
 
         if (!string.IsNullOrWhiteSpace(bundledPath))
@@ -107,7 +107,7 @@ public sealed class ToolLocator
         return new ToolResolution(
             null,
             ToolSource.None,
-            $"\"{fileName}\" was not found. Run tools\\fetch-deps.ps1 to download it, install it and put it on PATH, or set the path in Settings.");
+            $"{fileName} was not found on this computer.");
     }
 
     /// <summary>Searches PATH, honouring PATHEXT for names given without an extension.</summary>

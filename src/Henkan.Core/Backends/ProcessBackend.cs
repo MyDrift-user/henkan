@@ -236,13 +236,13 @@ public sealed class ProcessBackend : IConversionBackend
             }
 
             throw new ConversionFailedException(
-                $"\"{Path.GetFileName(executablePath)}\" exceeded the {this.Definition.TimeoutSeconds} second time limit and was stopped.");
+                $"{this.Definition.Name} took longer than {this.Definition.TimeoutSeconds} seconds and was stopped.");
         }
 
         if (!this.Definition.SuccessExitCodes.Contains(process.ExitCode))
         {
             throw new ConversionFailedException(
-                $"\"{Path.GetFileName(executablePath)}\" exited with code {process.ExitCode}.{Environment.NewLine}{tail}");
+                $"{this.Definition.Name} could not convert the file (exit code {process.ExitCode}).{Environment.NewLine}{tail}");
         }
 
         if (this.Definition.OutputHandling == OutputHandling.TemporaryDirectory)
@@ -253,7 +253,7 @@ public sealed class ProcessBackend : IConversionBackend
         if (!File.Exists(context.OutputPath))
         {
             throw new ConversionFailedException(
-                $"\"{Path.GetFileName(executablePath)}\" reported success but produced no file at \"{context.OutputPath}\".");
+                $"{this.Definition.Name} finished without writing \"{Path.GetFileName(context.OutputPath)}\".");
         }
 
         context.Report(1d);

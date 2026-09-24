@@ -1,3 +1,4 @@
+using Henkan.Core.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -79,7 +80,9 @@ public static class ErrorReport
         ArgumentNullException.ThrowIfNull(exception);
 
         AppServices.Log.LogCritical(exception, "{Title}", title);
-        NativeMessageBox.Show(title, exception.ToString());
+        NativeMessageBox.Show(
+            title,
+            $"{exception.Message}{Environment.NewLine}{Environment.NewLine}The details are in the log, in {HenkanPaths.LogsDirectory}.");
     }
 
     private static string Describe(string message, Exception? exception)
@@ -89,8 +92,8 @@ public static class ErrorReport
             return message;
         }
 
-        // The type name matters when the message alone is something unhelpful
-        // like "Value cannot be null".
-        return $"{message}{Environment.NewLine}{Environment.NewLine}{exception.GetType().Name}: {exception.Message}";
+        // The reason in the exception's own words, without its type name; the
+        // type and the stack trace are in the log for whoever needs them.
+        return $"{message}{Environment.NewLine}{Environment.NewLine}{exception.Message}";
     }
 }

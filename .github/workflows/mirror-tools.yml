@@ -1,0 +1,24 @@
+name: Mirror bundled tools
+
+# Copies FFmpeg, Ghostscript and 7-Zip, with their source code, into the
+# release named in tools/deps.json. Run it by hand after changing the pinned
+# versions there; release builds download the tools from that mirror.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Mirror the tools and their source
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./tools/mirror-tools.ps1 -Repository ${{ github.repository }}

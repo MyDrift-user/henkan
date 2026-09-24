@@ -104,9 +104,35 @@
 
             <Border Style="{StaticResource CardStyle}">
                 <StackPanel Spacing="12">
-                    <TextBlock Text="Bundled tools" FontWeight="SemiBold" />
-                    <TextBlock Text="{x:Bind ViewModel.ToolsHint}" TextWrapping="Wrap" />
-                    <TextBlock Text="{x:Bind ViewModel.ToolsFolder}" Style="{StaticResource MonospaceStyle}" />
+                    <TextBlock Text="Tools" FontWeight="SemiBold" />
+                    <TextBlock
+                        Text="The programs that do the converting. The ones Henkan comes with are always here; the others are used when they are installed."
+                        Style="{StaticResource CaptionStyle}"
+                        TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.Tools}" Margin="0,4,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ToolStatus">
+                                <Grid ColumnSpacing="12" Padding="0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="{x:Bind Glyph}" FontSize="16" Foreground="{x:Bind Brush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                    <StackPanel Grid.Column="1" Spacing="2">
+                                        <TextBlock Text="{x:Bind Name}" />
+                                        <TextBlock Text="{x:Bind Detail}" Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <HyperlinkButton
+                                        Grid.Column="2"
+                                        Content="Get it"
+                                        NavigateUri="{x:Bind Homepage}"
+                                        VerticalAlignment="Center"
+                                        Visibility="{x:Bind CanGet}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </Border>
 
@@ -119,9 +145,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="About" FontWeight="SemiBold" />
                     <TextBlock>
-                        <Run Text="Henkan" />
-                        <Run Text="{x:Bind ViewModel.Version}" />
-                        <Run Text=", GPL-3.0-or-later." />
+                        <Run Text="Henkan " /><Run Text="{x:Bind ViewModel.Version}" /><Run Text=", GPL-3.0-or-later." />
                     </TextBlock>
                     <TextBlock Style="{StaticResource CaptionStyle}">
                         <Run Text="Data folder:" />

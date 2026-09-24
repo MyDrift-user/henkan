@@ -144,7 +144,7 @@
                         Text="{x:Bind VisibleWhen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         Style="{StaticResource CodeTextBoxStyle}" />
 
-                    <CheckBox Content="Hide behind the advanced disclosure" IsChecked="{x:Bind Advanced, Mode=TwoWay}" />
+                    <CheckBox Content="Show it only under Advanced" IsChecked="{x:Bind Advanced, Mode=TwoWay}" />
 
                     <StackPanel Spacing="4" Visibility="{x:Bind HasChoices, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
                         <Grid>
@@ -170,7 +170,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBox
                     Header="Conversions to try, first available wins"
-                    PlaceholderText="ffmpeg:mp4, handbrake:mp4"
+                    PlaceholderText="office/word-pdf, libreoffice/pdf"
                     Text="{x:Bind Targets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Style="{StaticResource CodeTextBoxStyle}" />
                 <TextBox
@@ -194,7 +194,7 @@
         <!-- One row of the tree -->
         <DataTemplate x:Key="NodeTemplate" x:DataType="vm:ConversionNode">
             <TreeViewItem ItemsSource="{x:Bind Children}" IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}" AutomationProperties.Name="{x:Bind Title, Mode=OneWay}">
-                <Grid ColumnSpacing="10" Padding="0,5">
+                <Grid ColumnSpacing="10" Padding="0,5,16,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -388,7 +388,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox Header="Executable" Text="{x:Bind ViewModel.Draft.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
-                                <TextBox Grid.Column="1" Header="Bundled copy, inside the tools folder" Text="{x:Bind ViewModel.Draft.BundledPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox Grid.Column="1" Header="Included copy, inside Henkan's tools folder" Text="{x:Bind ViewModel.Draft.BundledPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
                             </Grid>
                             <TextBox
                                 Header="Also look here, one path per line"
@@ -408,8 +408,8 @@
                             </Grid>
                             <TextBox Header="Website" Text="{x:Bind ViewModel.Draft.HomepageUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Button Content="Use my own copy of the tool" Command="{x:Bind ViewModel.SetExecutableCommand}" />
-                                <Button Content="Go back to the bundled one" Command="{x:Bind ViewModel.ClearExecutableCommand}" />
+                                <Button Content="Choose its program" Command="{x:Bind ViewModel.SetExecutableCommand}" />
+                                <Button Content="Find it automatically" Command="{x:Bind ViewModel.ClearExecutableCommand}" />
                                 <Button Content="Open the website" Command="{x:Bind ViewModel.OpenHomepageCommand}" />
                             </StackPanel>
                         </StackPanel>
@@ -454,7 +454,7 @@
                                 SelectedItem="{x:Bind ViewModel.Draft.ProgressStream, Mode=TwoWay}"
                                 Width="260" />
                             <CheckBox
-                                Content="The tool names its own output file, so point it at a scratch folder and take what appears there"
+                                Content="The tool picks its own output file name, so Henkan collects the result from a temporary folder"
                                 IsChecked="{x:Bind ViewModel.Draft.UsesTemporaryDirectory, Mode=TwoWay}" />
                         </StackPanel>
                     </Border>
@@ -627,7 +627,7 @@
 
                         <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.UsesOperation, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
                             <StackPanel Spacing="12">
-                                <TextBlock Text="What the built-in code does" FontWeight="SemiBold" />
+                                <TextBlock Text="Built-in operation" FontWeight="SemiBold" />
                                 <TextBox Header="Operation" Text="{x:Bind ViewModel.SelectedTarget.Operation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
                                 <TextBox
                                     Header="Settings, one name=value per line"
@@ -635,7 +635,8 @@
                                     AcceptsReturn="True"
                                     MinHeight="64"
                                     Style="{StaticResource CodeTextBoxStyle}" />
-                                <TextBlock Style="{StaticResource CaptionStyle}" Text="ImageMagick: operation icon or animation. Office: operation word, excel or powerpoint, with mode and format. 7-Zip: format, and operation compress, repack or extract. docs/backends.md lists every value." />
+                                <TextBlock Style="{StaticResource CaptionStyle}" Text="ImageMagick: operation icon, animation or combine. Office: operation word, excel or powerpoint, with a mode and a format. 7-Zip: a format, and operation compress, repack or extract." />
+                                <HyperlinkButton Content="Every operation and setting" NavigateUri="https://github.com/MyDrift-user/henkan/blob/main/docs/backends.md" Padding="0" />
                             </StackPanel>
                         </Border>
 
@@ -648,7 +649,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
                                         <TextBlock Text="Steps" FontWeight="SemiBold" />
-                                        <TextBlock Text="Each step runs a conversion from another backend on what the last one produced. Name several and the first one that is available is used." Style="{StaticResource CaptionStyle}" />
+                                        <TextBlock Text="Each step runs a conversion of another tool on what the step before produced, written as tool/conversion. Name several and the first one that is installed is used." Style="{StaticResource CaptionStyle}" />
                                     </StackPanel>
                                     <Button Grid.Column="1" VerticalAlignment="Top" Content="Add step" Command="{x:Bind ViewModel.AddStepCommand}" CommandParameter="{x:Bind ViewModel.SelectedTarget, Mode=OneWay}" />
                                 </Grid>

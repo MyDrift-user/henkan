@@ -64,10 +64,10 @@ public sealed partial class ConversionNode : ObservableObject
 
     public string Glyph => this.Kind switch
     {
-        NodeKind.Tool => "",
-        NodeKind.Conversion => "",
+        NodeKind.Tool => "\uE90F",
+        NodeKind.Conversion => "\uE8AB",
         NodeKind.Variant => "\uE8EC",
-        _ => "",
+        _ => "\uE7BA",
     };
 
     public static ConversionNode ForTool(string backendId, string title, string subtitle, bool available) => new(NodeKind.Tool, backendId)
