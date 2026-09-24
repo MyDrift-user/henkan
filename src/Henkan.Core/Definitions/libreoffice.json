@@ -1,0 +1,477 @@
+{
+  "id": "libreoffice",
+  "name": "LibreOffice",
+  "description": "Document conversion through a locally installed LibreOffice, headless. Covers the Office formats on machines without Microsoft Office.",
+  "kind": "process",
+  "executable": {
+    "fileName": "soffice.exe",
+    "searchPaths": [
+      "%ProgramFiles%\\LibreOffice\\program\\soffice.exe",
+      "%ProgramFiles(x86)%\\LibreOffice\\program\\soffice.exe",
+      "%LocalAppData%\\Programs\\LibreOffice\\program\\soffice.exe"
+    ],
+    "probeArguments": [
+      "--version"
+    ],
+    "versionPattern": "LibreOffice (\\S+)",
+    "homepageUrl": "https://www.libreoffice.org/"
+  },
+  "successExitCodes": [
+    0
+  ],
+  "outputHandling": "temporaryDirectory",
+  "timeoutSeconds": 600,
+  "argumentPrefix": [
+    {
+      "value": "--headless --norestore --nologo"
+    }
+  ],
+  "argumentSuffix": [
+    {
+      "value": "--outdir \"{tempDir}\" \"{input}\""
+    }
+  ],
+  "targets": [
+    {
+      "id": "pdf",
+      "label": "PDF (LibreOffice)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "inputExtensions": [
+        "$document"
+      ],
+      "options": [
+        {
+          "id": "PdfA",
+          "label": "PDF/A-2b compliant",
+          "kind": "boolean",
+          "default": "false"
+        },
+        {
+          "id": "Quality",
+          "label": "Image quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1
+        }
+      ],
+      "arguments": [
+        {
+          "value": "--convert-to \"pdf:writer_pdf_Export:{{\"\"Quality\"\":{Quality},\"\"SelectPdfVersion\"\":2}}\"",
+          "when": "PdfA",
+          "comment": "SelectPdfVersion 2 is PDF/A-2b. Doubled braces are literal braces, doubled quotes are literal quotes."
+        },
+        {
+          "value": "--convert-to \"pdf:writer_pdf_Export:{{\"\"Quality\"\":{Quality}}}\"",
+          "when": "!PdfA"
+        }
+      ]
+    },
+    {
+      "id": "docx",
+      "label": "Word (DOCX)",
+      "outputExtension": "docx",
+      "category": "Document",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to docx"
+        }
+      ]
+    },
+    {
+      "id": "odt",
+      "label": "OpenDocument text (ODT)",
+      "outputExtension": "odt",
+      "category": "Document",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to odt"
+        }
+      ]
+    },
+    {
+      "id": "xlsx",
+      "label": "Excel (XLSX)",
+      "outputExtension": "xlsx",
+      "category": "Document",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to xlsx"
+        }
+      ]
+    },
+    {
+      "id": "pptx",
+      "label": "PowerPoint (PPTX)",
+      "outputExtension": "pptx",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to pptx"
+        }
+      ]
+    },
+    {
+      "id": "doc",
+      "label": "Word 97-2003 (DOC)",
+      "outputExtension": "doc",
+      "category": "Document",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to doc"
+        }
+      ]
+    },
+    {
+      "id": "rtf",
+      "label": "Rich text (RTF)",
+      "outputExtension": "rtf",
+      "category": "Document",
+      "description": "Formatted text that almost every word processor ever written can open.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to rtf"
+        }
+      ]
+    },
+    {
+      "id": "txt",
+      "label": "Plain text",
+      "outputExtension": "txt",
+      "category": "Document",
+      "description": "Drops all formatting and keeps the words.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"txt:Text (encoded):UTF8\""
+        }
+      ]
+    },
+    {
+      "id": "html",
+      "label": "HTML",
+      "outputExtension": "html",
+      "category": "Document",
+      "inputExtensions": [
+        "$text",
+        "$spreadsheet",
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to html"
+        }
+      ]
+    },
+    {
+      "id": "epub",
+      "label": "EPUB",
+      "outputExtension": "epub",
+      "category": "Document",
+      "description": "For e-readers. Reflows to the screen rather than keeping fixed pages.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to epub"
+        }
+      ]
+    },
+    {
+      "id": "xls",
+      "label": "Excel 97-2003 (XLS)",
+      "outputExtension": "xls",
+      "category": "Document",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to xls"
+        }
+      ]
+    },
+    {
+      "id": "ods",
+      "label": "OpenDocument spreadsheet (ODS)",
+      "outputExtension": "ods",
+      "category": "Document",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to ods"
+        }
+      ]
+    },
+    {
+      "id": "csv",
+      "label": "CSV",
+      "outputExtension": "csv",
+      "category": "Document",
+      "description": "The first sheet only, since a CSV file holds exactly one table.",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [
+        {
+          "id": "Separator",
+          "label": "Separator",
+          "kind": "choice",
+          "default": "44",
+          "choices": [
+            {
+              "value": "44",
+              "label": "Comma"
+            },
+            {
+              "value": "59",
+              "label": "Semicolon"
+            },
+            {
+              "value": "9",
+              "label": "Tab"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "--convert-to \"csv:Text - txt - csv (StarCalc):{Separator},34,76\"",
+          "comment": "Separator code, then quote character 34 and UTF-8 as code page 76."
+        }
+      ]
+    },
+    {
+      "id": "ppt",
+      "label": "PowerPoint 97-2003 (PPT)",
+      "outputExtension": "ppt",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to ppt"
+        }
+      ]
+    },
+    {
+      "id": "odp",
+      "label": "OpenDocument presentation (ODP)",
+      "outputExtension": "odp",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to odp"
+        }
+      ]
+    },
+    {
+      "id": "png",
+      "label": "PNG (first page)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": "Renders the first page or slide, which is how you get a thumbnail of a document.",
+      "inputExtensions": [
+        "$document"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to png"
+        }
+      ]
+    },
+    {
+      "id": "docm",
+      "label": "Word with macros (DOCM)",
+      "outputExtension": "docm",
+      "category": "Document",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"docm:MS Word 2007 XML VBA\""
+        }
+      ]
+    },
+    {
+      "id": "dotx",
+      "label": "Word template (DOTX)",
+      "outputExtension": "dotx",
+      "category": "Document",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"dotx:MS Word 2007 XML Template\""
+        }
+      ]
+    },
+    {
+      "id": "ott",
+      "label": "OpenDocument text template (OTT)",
+      "outputExtension": "ott",
+      "category": "Document",
+      "inputExtensions": [
+        "$text"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"ott:writer8_template\""
+        }
+      ]
+    },
+    {
+      "id": "xlsm",
+      "label": "Excel with macros (XLSM)",
+      "outputExtension": "xlsm",
+      "category": "Document",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"xlsm:Calc MS Excel 2007 VBA XML\""
+        }
+      ]
+    },
+    {
+      "id": "xltx",
+      "label": "Excel template (XLTX)",
+      "outputExtension": "xltx",
+      "category": "Document",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"xltx:Calc MS Excel 2007 XML Template\""
+        }
+      ]
+    },
+    {
+      "id": "ots",
+      "label": "OpenDocument spreadsheet template (OTS)",
+      "outputExtension": "ots",
+      "category": "Document",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"ots:calc8_template\""
+        }
+      ]
+    },
+    {
+      "id": "pptm",
+      "label": "PowerPoint with macros (PPTM)",
+      "outputExtension": "pptm",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"pptm:Impress MS PowerPoint 2007 XML VBA\""
+        }
+      ]
+    },
+    {
+      "id": "ppsx",
+      "label": "PowerPoint show (PPSX)",
+      "outputExtension": "ppsx",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"ppsx:Impress MS PowerPoint 2007 XML AutoPlay\""
+        }
+      ]
+    },
+    {
+      "id": "potx",
+      "label": "PowerPoint template (POTX)",
+      "outputExtension": "potx",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"potx:Impress MS PowerPoint 2007 XML Template\""
+        }
+      ]
+    },
+    {
+      "id": "otp",
+      "label": "OpenDocument presentation template (OTP)",
+      "outputExtension": "otp",
+      "category": "Document",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "--convert-to \"otp:impress8_template\""
+        }
+      ]
+    }
+  ]
+}

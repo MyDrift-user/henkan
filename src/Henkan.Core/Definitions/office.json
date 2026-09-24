@@ -1,0 +1,1444 @@
+{
+  "id": "office",
+  "name": "Microsoft Office",
+  "description": "Document conversion through COM automation of an installed Microsoft Office. Every format the installed applications can save is available.",
+  "kind": "office",
+  "timeoutSeconds": 900,
+  "targets": [
+    {
+      "id": "word-pdf",
+      "label": "PDF (Word)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Laid out by Word itself, so it matches what printing would give you.",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "options": [
+        {
+          "id": "OptimizeFor",
+          "label": "Optimise for",
+          "kind": "choice",
+          "default": "Print",
+          "choices": [
+            {
+              "value": "Print"
+            },
+            {
+              "value": "Screen",
+              "label": "Screen (smaller)"
+            }
+          ]
+        },
+        {
+          "id": "CreateBookmarks",
+          "label": "Bookmarks",
+          "kind": "choice",
+          "default": "None",
+          "choices": [
+            {
+              "value": "None"
+            },
+            {
+              "value": "Headings",
+              "label": "From headings"
+            },
+            {
+              "value": "Bookmarks",
+              "label": "From Word bookmarks"
+            }
+          ]
+        },
+        {
+          "id": "IncludeDocumentProperties",
+          "label": "Keep document properties",
+          "kind": "boolean",
+          "default": "true"
+        },
+        {
+          "id": "PdfA",
+          "label": "PDF/A compliant",
+          "kind": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "id": "word-xps",
+      "label": "XPS (Word)",
+      "outputExtension": "xps",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "options": [
+        {
+          "id": "OptimizeFor",
+          "label": "Optimise for",
+          "kind": "choice",
+          "default": "Print",
+          "choices": [
+            {
+              "value": "Print"
+            },
+            {
+              "value": "Screen",
+              "label": "Screen (smaller)"
+            }
+          ]
+        },
+        {
+          "id": "CreateBookmarks",
+          "label": "Bookmarks",
+          "kind": "choice",
+          "default": "None",
+          "choices": [
+            {
+              "value": "None"
+            },
+            {
+              "value": "Headings",
+              "label": "From headings"
+            },
+            {
+              "value": "Bookmarks",
+              "label": "From Word bookmarks"
+            }
+          ]
+        },
+        {
+          "id": "IncludeDocumentProperties",
+          "label": "Keep document properties",
+          "kind": "boolean",
+          "default": "true"
+        },
+        {
+          "id": "PdfA",
+          "label": "PDF/A compliant",
+          "kind": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "id": "word-docx",
+      "label": "Word (DOCX)",
+      "outputExtension": "docx",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "16"
+      },
+      "options": []
+    },
+    {
+      "id": "word-doc",
+      "label": "Word 97-2003 (DOC)",
+      "outputExtension": "doc",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "0"
+      },
+      "options": []
+    },
+    {
+      "id": "word-rtf",
+      "label": "Rich text (RTF)",
+      "outputExtension": "rtf",
+      "category": "Document",
+      "description": "Formatted text that almost every word processor ever written can open.",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "6"
+      },
+      "options": []
+    },
+    {
+      "id": "word-odt",
+      "label": "OpenDocument text (ODT)",
+      "outputExtension": "odt",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "23"
+      },
+      "options": []
+    },
+    {
+      "id": "word-txt",
+      "label": "Plain text",
+      "outputExtension": "txt",
+      "category": "Document",
+      "description": "Drops all formatting and keeps the words.",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "2"
+      },
+      "options": []
+    },
+    {
+      "id": "word-html",
+      "label": "HTML",
+      "outputExtension": "html",
+      "category": "Document",
+      "description": "Filtered HTML, without the Office markup that makes the file ten times larger.",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "10"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-pdf",
+      "label": "PDF (Excel)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "choice",
+          "default": "Standard",
+          "choices": [
+            {
+              "value": "Standard"
+            },
+            {
+              "value": "Minimum",
+              "label": "Minimum (smaller)"
+            }
+          ]
+        },
+        {
+          "id": "IgnorePrintAreas",
+          "label": "Ignore print areas",
+          "kind": "boolean",
+          "default": "false"
+        },
+        {
+          "id": "IncludeDocumentProperties",
+          "label": "Keep document properties",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ]
+    },
+    {
+      "id": "excel-xps",
+      "label": "XPS (Excel)",
+      "outputExtension": "xps",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "choice",
+          "default": "Standard",
+          "choices": [
+            {
+              "value": "Standard"
+            },
+            {
+              "value": "Minimum",
+              "label": "Minimum (smaller)"
+            }
+          ]
+        },
+        {
+          "id": "IgnorePrintAreas",
+          "label": "Ignore print areas",
+          "kind": "boolean",
+          "default": "false"
+        },
+        {
+          "id": "IncludeDocumentProperties",
+          "label": "Keep document properties",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ]
+    },
+    {
+      "id": "excel-xlsx",
+      "label": "Excel (XLSX)",
+      "outputExtension": "xlsx",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "51"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-xls",
+      "label": "Excel 97-2003 (XLS)",
+      "outputExtension": "xls",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "56"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-ods",
+      "label": "OpenDocument spreadsheet (ODS)",
+      "outputExtension": "ods",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "60"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-csv",
+      "label": "CSV",
+      "outputExtension": "csv",
+      "category": "Document",
+      "description": "UTF-8. A CSV holds one table, so the active sheet is what gets written.",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "activeSheetOnly": "true",
+        "mode": "saveas",
+        "format": "62"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-txt",
+      "label": "Tab separated text",
+      "outputExtension": "txt",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "activeSheetOnly": "true",
+        "mode": "saveas",
+        "format": "42"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-html",
+      "label": "HTML",
+      "outputExtension": "html",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "44"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-pdf",
+      "label": "PDF (PowerPoint)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "32"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-xps",
+      "label": "XPS (PowerPoint)",
+      "outputExtension": "xps",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "33"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-pptx",
+      "label": "PowerPoint (PPTX)",
+      "outputExtension": "pptx",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "24"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-ppt",
+      "label": "PowerPoint 97-2003 (PPT)",
+      "outputExtension": "ppt",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "1"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-odp",
+      "label": "OpenDocument presentation (ODP)",
+      "outputExtension": "odp",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "35"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-png",
+      "label": "PNG (one slide)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": "Renders a single slide at whatever width you ask for.",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "imageFormat": "PNG",
+        "mode": "slide-image"
+      },
+      "options": [
+        {
+          "id": "Slide",
+          "label": "Slide",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "choice",
+          "default": "1920",
+          "unit": "px",
+          "choices": [
+            {
+              "value": "3840"
+            },
+            {
+              "value": "1920"
+            },
+            {
+              "value": "1280"
+            },
+            {
+              "value": "960"
+            },
+            {
+              "value": "640"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "powerpoint-jpg",
+      "label": "JPEG (one slide)",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "imageFormat": "JPG",
+        "mode": "slide-image"
+      },
+      "options": [
+        {
+          "id": "Slide",
+          "label": "Slide",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "choice",
+          "default": "1920",
+          "unit": "px",
+          "choices": [
+            {
+              "value": "3840"
+            },
+            {
+              "value": "1920"
+            },
+            {
+              "value": "1280"
+            },
+            {
+              "value": "960"
+            },
+            {
+              "value": "640"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "word-docm",
+      "label": "Word with macros (DOCM)",
+      "outputExtension": "docm",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "13"
+      },
+      "options": []
+    },
+    {
+      "id": "word-dotx",
+      "label": "Word template (DOTX)",
+      "outputExtension": "dotx",
+      "category": "Document",
+      "description": "A template: opening it starts a new document based on it.",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "14"
+      },
+      "options": []
+    },
+    {
+      "id": "word-dotm",
+      "label": "Word template with macros (DOTM)",
+      "outputExtension": "dotm",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "15"
+      },
+      "options": []
+    },
+    {
+      "id": "word-dot",
+      "label": "Word 97-2003 template (DOT)",
+      "outputExtension": "dot",
+      "category": "Document",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "1"
+      },
+      "options": []
+    },
+    {
+      "id": "word-mht",
+      "label": "Web archive (MHT)",
+      "outputExtension": "mht",
+      "category": "Document",
+      "description": "One file holding the page and its pictures.",
+      "inputExtensions": [
+        "doc",
+        "docx",
+        "docm",
+        "dot",
+        "dotx",
+        "dotm",
+        "rtf",
+        "txt",
+        "htm",
+        "html",
+        "mht",
+        "mhtml",
+        "odt",
+        "xml",
+        "wps"
+      ],
+      "operation": "word",
+      "settings": {
+        "mode": "saveas",
+        "format": "9"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-xlsm",
+      "label": "Excel with macros (XLSM)",
+      "outputExtension": "xlsm",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "52"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-xlsb",
+      "label": "Excel binary (XLSB)",
+      "outputExtension": "xlsb",
+      "category": "Document",
+      "description": "Opens and saves faster than XLSX for very large workbooks.",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "50"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-xltx",
+      "label": "Excel template (XLTX)",
+      "outputExtension": "xltx",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "54"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-xltm",
+      "label": "Excel template with macros (XLTM)",
+      "outputExtension": "xltm",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "53"
+      },
+      "options": []
+    },
+    {
+      "id": "excel-xlt",
+      "label": "Excel 97-2003 template (XLT)",
+      "outputExtension": "xlt",
+      "category": "Document",
+      "inputExtensions": [
+        "xls",
+        "xlsx",
+        "xlsm",
+        "xlsb",
+        "xlt",
+        "xltx",
+        "xltm",
+        "csv",
+        "txt",
+        "prn",
+        "dif",
+        "slk",
+        "ods",
+        "xml",
+        "htm",
+        "html"
+      ],
+      "operation": "excel",
+      "settings": {
+        "mode": "saveas",
+        "format": "17"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-pptm",
+      "label": "PowerPoint with macros (PPTM)",
+      "outputExtension": "pptm",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "25"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-ppsx",
+      "label": "PowerPoint show (PPSX)",
+      "outputExtension": "ppsx",
+      "category": "Document",
+      "description": "Opens straight into the slide show.",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "28"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-ppsm",
+      "label": "PowerPoint show with macros (PPSM)",
+      "outputExtension": "ppsm",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "29"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-potx",
+      "label": "PowerPoint template (POTX)",
+      "outputExtension": "potx",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "26"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-potm",
+      "label": "PowerPoint template with macros (POTM)",
+      "outputExtension": "potm",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "27"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-pps",
+      "label": "PowerPoint 97-2003 show (PPS)",
+      "outputExtension": "pps",
+      "category": "Document",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "saveas",
+        "format": "7"
+      },
+      "options": []
+    },
+    {
+      "id": "powerpoint-mp4",
+      "label": "Video (MP4)",
+      "outputExtension": "mp4",
+      "category": "Video",
+      "description": "Records the deck as a video, with transitions, animations and any recorded narration.",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "video"
+      },
+      "options": [
+        {
+          "id": "Height",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "1080",
+          "unit": "p",
+          "choices": [
+            {
+              "value": "480"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "2160",
+              "label": "2160 (4K)"
+            }
+          ]
+        },
+        {
+          "id": "SecondsPerSlide",
+          "label": "Seconds per slide",
+          "kind": "integer",
+          "default": "5",
+          "minimum": 1,
+          "maximum": 600,
+          "description": "For slides without timings of their own."
+        },
+        {
+          "id": "UseTimings",
+          "label": "Use recorded timings and narration",
+          "kind": "boolean",
+          "default": "true"
+        },
+        {
+          "id": "FramesPerSecond",
+          "label": "Frame rate",
+          "kind": "choice",
+          "default": "30",
+          "unit": "fps",
+          "choices": [
+            {
+              "value": "24"
+            },
+            {
+              "value": "30"
+            },
+            {
+              "value": "60"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "powerpoint-wmv",
+      "label": "Video (WMV)",
+      "outputExtension": "wmv",
+      "category": "Video",
+      "inputExtensions": [
+        "ppt",
+        "pptx",
+        "pptm",
+        "pps",
+        "ppsx",
+        "ppsm",
+        "pot",
+        "potx",
+        "odp"
+      ],
+      "operation": "powerpoint",
+      "settings": {
+        "mode": "video"
+      },
+      "options": [
+        {
+          "id": "Height",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "1080",
+          "unit": "p",
+          "choices": [
+            {
+              "value": "480"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "2160",
+              "label": "2160 (4K)"
+            }
+          ]
+        },
+        {
+          "id": "SecondsPerSlide",
+          "label": "Seconds per slide",
+          "kind": "integer",
+          "default": "5",
+          "minimum": 1,
+          "maximum": 600,
+          "description": "For slides without timings of their own."
+        },
+        {
+          "id": "UseTimings",
+          "label": "Use recorded timings and narration",
+          "kind": "boolean",
+          "default": "true"
+        },
+        {
+          "id": "FramesPerSecond",
+          "label": "Frame rate",
+          "kind": "choice",
+          "default": "30",
+          "unit": "fps",
+          "choices": [
+            {
+              "value": "24"
+            },
+            {
+              "value": "30"
+            },
+            {
+              "value": "60"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

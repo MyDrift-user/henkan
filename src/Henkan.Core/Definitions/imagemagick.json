@@ -1,0 +1,420 @@
+{
+  "id": "imagemagick",
+  "name": "ImageMagick",
+  "description": "Image conversion in-process through Magick.NET. No external tool needed.",
+  "kind": "imageMagick",
+  "sharedOptions": [
+    {
+      "id": "ResizeMode",
+      "label": "Resize",
+      "kind": "choice",
+      "default": "None",
+      "group": "Size",
+      "choices": [
+        {
+          "value": "None",
+          "label": "Keep original size"
+        },
+        {
+          "value": "Percent",
+          "label": "Scale by percentage"
+        },
+        {
+          "value": "Fit",
+          "label": "Fit inside a box"
+        }
+      ]
+    },
+    {
+      "id": "ScalePercent",
+      "label": "Scale",
+      "kind": "range",
+      "default": "50",
+      "minimum": 1,
+      "maximum": 400,
+      "step": 1,
+      "unit": "%",
+      "group": "Size",
+      "visibleWhen": "ResizeMode == 'Percent'"
+    },
+    {
+      "id": "MaxWidth",
+      "label": "Maximum width",
+      "description": "Leave 0 to derive from the height.",
+      "kind": "integer",
+      "default": "1920",
+      "minimum": 0,
+      "maximum": 20000,
+      "unit": "px",
+      "group": "Size",
+      "visibleWhen": "ResizeMode == 'Fit'"
+    },
+    {
+      "id": "MaxHeight",
+      "label": "Maximum height",
+      "description": "Leave 0 to derive from the width.",
+      "kind": "integer",
+      "default": "0",
+      "minimum": 0,
+      "maximum": 20000,
+      "unit": "px",
+      "group": "Size",
+      "visibleWhen": "ResizeMode == 'Fit'"
+    },
+    {
+      "id": "Rotation",
+      "label": "Rotate",
+      "kind": "choice",
+      "default": "0",
+      "unit": "degrees",
+      "group": "Size",
+      "choices": [
+        {
+          "value": "0",
+          "label": "None"
+        },
+        {
+          "value": "90",
+          "label": "90 clockwise"
+        },
+        {
+          "value": "180"
+        },
+        {
+          "value": "270",
+          "label": "90 anticlockwise"
+        }
+      ]
+    },
+    {
+      "id": "StripMetadata",
+      "label": "Remove metadata",
+      "description": "Drops EXIF, colour profiles and comments. Smaller and more private.",
+      "kind": "boolean",
+      "default": "false",
+      "group": "Metadata"
+    }
+  ],
+  "targets": [
+    {
+      "id": "png",
+      "label": "PNG",
+      "outputExtension": "png",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "jpg",
+      "label": "JPEG",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding"
+        },
+        {
+          "id": "BackgroundColor",
+          "label": "Transparency becomes",
+          "description": "JPEG has no alpha channel. Any ImageMagick colour name or hex value.",
+          "kind": "text",
+          "default": "white",
+          "group": "Encoding"
+        }
+      ]
+    },
+    {
+      "id": "webp",
+      "label": "WebP",
+      "outputExtension": "webp",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Lossless",
+          "label": "Lossless",
+          "kind": "boolean",
+          "default": "false",
+          "group": "Encoding"
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "85",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding",
+          "visibleWhen": "!Lossless"
+        }
+      ]
+    },
+    {
+      "id": "avif",
+      "label": "AVIF",
+      "outputExtension": "avif",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Lossless",
+          "label": "Lossless",
+          "kind": "boolean",
+          "default": "false",
+          "group": "Encoding"
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "70",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding",
+          "visibleWhen": "!Lossless"
+        }
+      ]
+    },
+    {
+      "id": "gif",
+      "label": "GIF",
+      "outputExtension": "gif",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "operation": "animation",
+      "options": []
+    },
+    {
+      "id": "bmp",
+      "label": "BMP",
+      "outputExtension": "bmp",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "BackgroundColor",
+          "label": "Transparency becomes",
+          "kind": "text",
+          "default": "white",
+          "group": "Encoding"
+        }
+      ]
+    },
+    {
+      "id": "tiff",
+      "label": "TIFF",
+      "outputExtension": "tiff",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "ico",
+      "label": "Icon (ICO)",
+      "outputExtension": "ico",
+      "category": "Image",
+      "description": "A multi-resolution Windows icon.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "operation": "icon",
+      "options": [
+        {
+          "id": "IconSizes",
+          "label": "Sizes",
+          "description": "Comma separated, each becomes one frame.",
+          "kind": "text",
+          "default": "16, 24, 32, 48, 64, 128, 256",
+          "group": "Encoding"
+        }
+      ]
+    },
+    {
+      "id": "pdf",
+      "label": "PDF (from image)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Image quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding"
+        }
+      ]
+    },
+    {
+      "id": "jxl",
+      "label": "JPEG XL",
+      "outputExtension": "jxl",
+      "category": "Image",
+      "description": "Smaller than JPEG at the same quality, and lossless when you ask for it.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Lossless",
+          "label": "Lossless",
+          "kind": "boolean",
+          "default": "false",
+          "group": "Encoding"
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding",
+          "visibleWhen": "!Lossless"
+        }
+      ]
+    },
+    {
+      "id": "jp2",
+      "label": "JPEG 2000",
+      "outputExtension": "jp2",
+      "category": "Image",
+      "description": "Used by archives, medical imaging and cinema packages.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding"
+        }
+      ]
+    },
+    {
+      "id": "tga",
+      "label": "Targa (TGA)",
+      "outputExtension": "tga",
+      "category": "Image",
+      "description": "Uncompressed with an alpha channel, still the exchange format for game textures.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "dds",
+      "label": "DirectDraw Surface (DDS)",
+      "outputExtension": "dds",
+      "category": "Image",
+      "description": "Block compressed textures a GPU can sample without unpacking them first.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "psd",
+      "label": "Photoshop (PSD)",
+      "outputExtension": "psd",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "ppm",
+      "label": "Portable pixmap (PPM)",
+      "outputExtension": "ppm",
+      "category": "Image",
+      "description": "About as simple as a raster file gets, which is why tooling likes it.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "qoi",
+      "label": "QOI",
+      "outputExtension": "qoi",
+      "category": "Image",
+      "description": "Lossless, and decodes far faster than PNG.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": []
+    },
+    {
+      "id": "pdf-combined",
+      "label": "One PDF from all selected images",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Image quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1,
+          "group": "Encoding"
+        }
+      ],
+      "description": "Every selected image becomes a page, in the order they were selected.",
+      "operation": "combine",
+      "combinesInputs": true
+    },
+    {
+      "id": "tiff-combined",
+      "label": "One multi-page TIFF from all selected images",
+      "outputExtension": "tiff",
+      "category": "Image",
+      "inputExtensions": [
+        "$image"
+      ],
+      "options": [],
+      "operation": "combine",
+      "combinesInputs": true
+    }
+  ]
+}

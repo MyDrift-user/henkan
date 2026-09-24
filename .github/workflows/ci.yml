@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore Henkan.sln -p:Platform=x64
+
+      - name: Test the core
+        run: dotnet test tests/Henkan.Core.Tests/Henkan.Core.Tests.csproj -c Release --no-restore --nologo
+
+      # The app is built without the bundled tools on purpose. That is the
+      # configuration the build must always succeed in.
+      - name: Build the app
+        run: dotnet build src/Henkan.App/Henkan.App.csproj -c Release -p:Platform=x64 --no-restore --nologo
+
+      - name: Publish the shell extension (NativeAOT)
+        run: dotnet publish src/Henkan.ShellExtension/Henkan.ShellExtension.csproj -c Release -r win-x64 --nologo
+
+      - name: Check the shell extension exports
+        shell: pwsh
+        run: |
+          $dll = 'src/Henkan.ShellExtension/bin/publish/Henkan.ShellExtension.dll'
+          if (-not (Test-Path $dll)) { throw "Missing $dll" }
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products * -property installationPath
+          $dumpbin = Get-ChildItem "$vs\VC\Tools\MSVC\*\bin\Hostx64\x64\dumpbin.exe" | Select-Object -First 1
+          $exports = & $dumpbin.FullName /exports $dll
+          foreach ($name in 'DllGetClassObject', 'DllCanUnloadNow') {
+            if (-not ($exports -match $name)) { throw "Export $name not found" }
+          }
+          Write-Host 'Exports present.'
+
+      - name: Upload shell extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: Henkan.ShellExtension
+          path: src/Henkan.ShellExtension/bin/publish/Henkan.ShellExtension.dll

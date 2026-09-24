@@ -1,0 +1,231 @@
+{
+  "id": "sevenzip",
+  "name": "7-Zip",
+  "description": "Archive packing and conversion through the bundled 7-Zip. Reads far more formats than it writes, so rar, iso, cab and the rest can be converted into zip or 7z.",
+  "kind": "archive",
+  "executable": {
+    "fileName": "7z.exe",
+    "bundledPath": "7zip/7z.exe",
+    "searchPaths": [
+      "%ProgramFiles%\\7-Zip\\7z.exe",
+      "%ProgramFiles(x86)%\\7-Zip\\7z.exe"
+    ],
+    "homepageUrl": "https://www.7-zip.org/"
+  },
+  "timeoutSeconds": 1800,
+  "sharedOptions": [
+    {
+      "id": "Level",
+      "label": "Compression",
+      "description": "0 stores without compressing, 9 is the smallest and slowest.",
+      "kind": "range",
+      "default": "5",
+      "minimum": 0,
+      "maximum": 9,
+      "step": 1
+    },
+    {
+      "id": "Repack",
+      "label": "Convert archives rather than nesting them",
+      "description": "On, an archive is unpacked and its contents written in the new format. Off, the archive file itself is put inside the new one.",
+      "kind": "boolean",
+      "default": "true",
+      "group": "Archives"
+    },
+    {
+      "id": "Password",
+      "label": "Password",
+      "description": "Encrypts what is written, and unlocks the source if it is already encrypted. Leave empty for none.",
+      "kind": "text",
+      "group": "Encryption",
+      "advanced": true
+    },
+    {
+      "id": "EncryptNames",
+      "label": "Hide the file names too",
+      "description": "7z only. A zip always lists its contents even when they are encrypted.",
+      "kind": "boolean",
+      "default": "false",
+      "group": "Encryption",
+      "advanced": true
+    }
+  ],
+  "targets": [
+    {
+      "id": "extract",
+      "label": "Extract",
+      "outputExtension": "",
+      "outputIsDirectory": true,
+      "category": "Archive",
+      "description": "Unpacks into a folder beside the archive, named after it. An archive that already holds a single folder is not nested a second time.",
+      "inputExtensions": [
+        "$archive"
+      ],
+      "operation": "extract",
+      "options": []
+    },
+    {
+      "id": "zip",
+      "label": "ZIP",
+      "outputExtension": "zip",
+      "category": "Archive",
+      "description": "Opens everywhere without anything installed.",
+      "inputExtensions": [
+        "*"
+      ],
+      "settings": {
+        "format": "zip"
+      },
+      "options": [],
+      "acceptsFolders": true,
+      "combinesInputs": true
+    },
+    {
+      "id": "7z",
+      "label": "7z",
+      "outputExtension": "7z",
+      "category": "Archive",
+      "description": "Considerably smaller than zip, and the only format here that can hide its file names.",
+      "inputExtensions": [
+        "*"
+      ],
+      "settings": {
+        "format": "7z"
+      },
+      "options": [
+        {
+          "id": "SolidArchive",
+          "label": "Solid archive",
+          "description": "Compresses the files as one stream, which is much smaller for many similar files and slower to extract just one.",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "acceptsFolders": true,
+      "combinesInputs": true
+    },
+    {
+      "id": "tar",
+      "label": "TAR",
+      "outputExtension": "tar",
+      "category": "Archive",
+      "description": "No compression. The plain container Unix tooling expects.",
+      "inputExtensions": [
+        "*"
+      ],
+      "settings": {
+        "format": "tar"
+      },
+      "options": [],
+      "acceptsFolders": true,
+      "combinesInputs": true
+    },
+    {
+      "id": "gz",
+      "label": "Gzip",
+      "outputExtension": "gz",
+      "category": "Archive",
+      "description": "Compresses a single file. Use TAR first for several.",
+      "inputExtensions": [
+        "*"
+      ],
+      "operation": "compress",
+      "settings": {
+        "format": "gzip"
+      },
+      "options": []
+    },
+    {
+      "id": "bz2",
+      "label": "Bzip2",
+      "outputExtension": "bz2",
+      "category": "Archive",
+      "description": "Compresses a single file, smaller than gzip and slower.",
+      "inputExtensions": [
+        "*"
+      ],
+      "operation": "compress",
+      "settings": {
+        "format": "bzip2"
+      },
+      "options": []
+    },
+    {
+      "id": "xz",
+      "label": "XZ",
+      "outputExtension": "xz",
+      "category": "Archive",
+      "description": "Compresses a single file, smaller than bzip2 and slower still.",
+      "inputExtensions": [
+        "*"
+      ],
+      "operation": "compress",
+      "settings": {
+        "format": "xz"
+      },
+      "options": []
+    },
+    {
+      "id": "unpack-zip",
+      "label": "ZIP (always convert)",
+      "outputExtension": "zip",
+      "category": "Archive",
+      "description": "Unpacks the archive and writes its contents as a zip, whatever the Repack option says.",
+      "inputExtensions": [
+        "$archive"
+      ],
+      "operation": "repack",
+      "settings": {
+        "format": "zip"
+      },
+      "options": []
+    },
+    {
+      "id": "unpack-7z",
+      "label": "7z (always convert)",
+      "outputExtension": "7z",
+      "category": "Archive",
+      "description": "Unpacks the archive and writes its contents as a 7z, whatever the Repack option says.",
+      "inputExtensions": [
+        "$archive"
+      ],
+      "operation": "repack",
+      "settings": {
+        "format": "7z"
+      },
+      "options": []
+    },
+    {
+      "id": "tar-gz",
+      "label": "TAR.GZ",
+      "outputExtension": "tar.gz",
+      "category": "Archive",
+      "description": "A tar compressed with gzip, the usual way to hand files to Linux and macOS.",
+      "inputExtensions": [
+        "*"
+      ],
+      "settings": {
+        "format": "tar.gz"
+      },
+      "options": [],
+      "acceptsFolders": true,
+      "combinesInputs": true
+    },
+    {
+      "id": "tar-xz",
+      "label": "TAR.XZ",
+      "outputExtension": "tar.xz",
+      "category": "Archive",
+      "description": "A tar compressed with xz: smaller than gzip, slower to make.",
+      "inputExtensions": [
+        "*"
+      ],
+      "settings": {
+        "format": "tar.xz"
+      },
+      "options": [],
+      "acceptsFolders": true,
+      "combinesInputs": true
+    }
+  ]
+}

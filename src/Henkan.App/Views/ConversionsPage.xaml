@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Henkan.App.Views.ConversionsPage"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Henkan.App.ViewModels"
+    xmlns:editing="using:Henkan.Core.Backends.Editing"
+    xmlns:controls="using:Henkan.App.Controls"
+    xmlns:local="using:Henkan.App.Views"
+    NavigationCacheMode="Required">
+
+    <Page.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <local:NullToVisibilityConverter x:Key="NullToVisibility" />
+
+        <!-- One piece of a command line -->
+        <DataTemplate x:Key="FragmentTemplate" x:DataType="editing:FragmentDraft">
+            <Grid ColumnSpacing="8" Padding="0,3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox
+                    Text="{x:Bind Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    PlaceholderText="-flag {Option}"
+                    Style="{StaticResource CodeInputStyle}" />
+                <TextBox
+                    Grid.Column="1"
+                    Text="{x:Bind When, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    PlaceholderText="only when..."
+                    Style="{StaticResource CodeInputStyle}" />
+                <CheckBox
+                    Grid.Column="2"
+                    Content="split"
+                    MinWidth="0"
+                    ToolTipService.ToolTip="Split into several arguments after the values are filled in. For a free-form box of extra arguments."
+                    IsChecked="{x:Bind SplitAfterExpansion, Mode=TwoWay}" />
+                <Button
+                    Grid.Column="3"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    ToolTipService.ToolTip="Remove"
+                    Command="{Binding ElementName=Root, Path=ViewModel.RemoveFragmentCommand}"
+                    CommandParameter="{x:Bind}">
+                    <FontIcon Glyph="&#xE711;" FontSize="12" />
+                </Button>
+            </Grid>
+        </DataTemplate>
+
+        <!-- One choice of a choice option -->
+        <DataTemplate x:Key="ChoiceTemplate" x:DataType="editing:ChoiceDraft">
+            <Grid ColumnSpacing="8" Padding="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{x:Bind Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="value passed to the tool" FontSize="12" />
+                <TextBox Grid.Column="1" Text="{x:Bind Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="what the user sees" FontSize="12" />
+                <Button
+                    Grid.Column="2"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    Command="{Binding ElementName=Root, Path=ViewModel.RemoveChoiceCommand}"
+                    CommandParameter="{x:Bind}">
+                    <FontIcon Glyph="&#xE711;" FontSize="12" />
+                </Button>
+            </Grid>
+        </DataTemplate>
+
+        <!-- One option, collapsed to its name until opened -->
+        <DataTemplate x:Key="OptionTemplate" x:DataType="editing:OptionDraft">
+            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,2">
+                <Expander.Header>
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center">
+                            <Run Text="{x:Bind Id, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text=" " />
+                            <Run Text="{x:Bind Label, Mode=OneWay}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="{x:Bind KindName, Mode=OneWay}" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
+                        <Button
+                            Grid.Column="2"
+                            Style="{StaticResource SubtleButtonStyle}"
+                            ToolTipService.ToolTip="Remove this option"
+                            Command="{Binding ElementName=Root, Path=ViewModel.RemoveOptionCommand}"
+                            CommandParameter="{x:Bind}">
+                            <FontIcon Glyph="&#xE711;" FontSize="12" />
+                        </Button>
+                    </Grid>
+                </Expander.Header>
+
+                <StackPanel Spacing="8" Padding="0,4,0,8">
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="160" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Header="Name used in arguments" Text="{x:Bind Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                        <TextBox Grid.Column="1" Header="Label" Text="{x:Bind Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox
+                            Grid.Column="2"
+                            Header="Editor"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{x:Bind vm:ConversionsViewModel.OptionKinds}"
+                            SelectedItem="{x:Bind KindName, Mode=TwoWay}" />
+                    </Grid>
+
+                    <TextBox Header="Help text" Text="{x:Bind Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Header="Default" Text="{x:Bind Default, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Column="1" Header="Group" Text="{x:Bind Group, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Column="2" Header="Unit" Text="{x:Bind Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid ColumnSpacing="8" Visibility="{x:Bind HasRange, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Header="Minimum" Text="{x:Bind Minimum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Column="1" Header="Maximum" Text="{x:Bind Maximum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Grid.Column="2" Header="Step" Text="{x:Bind Step, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <TextBox
+                        Header="Shown only when"
+                        PlaceholderText="Mode == 'VBR'"
+                        Text="{x:Bind VisibleWhen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource CodeTextBoxStyle}" />
+
+                    <CheckBox Content="Hide behind the advanced disclosure" IsChecked="{x:Bind Advanced, Mode=TwoWay}" />
+
+                    <StackPanel Spacing="4" Visibility="{x:Bind HasChoices, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                        <Grid>
+                            <TextBlock Text="Choices" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button
+                                HorizontalAlignment="Right"
+                                Content="Add choice"
+                                Command="{Binding ElementName=Root, Path=ViewModel.AddChoiceCommand}"
+                                CommandParameter="{x:Bind}" />
+                        </Grid>
+                        <ItemsControl ItemsSource="{x:Bind Choices}" ItemTemplate="{StaticResource ChoiceTemplate}" />
+                    </StackPanel>
+                </StackPanel>
+            </Expander>
+        </DataTemplate>
+        <!-- One step of a pipeline -->
+        <DataTemplate x:Key="StepTemplate" x:DataType="editing:StepDraft">
+            <Grid ColumnSpacing="8" Padding="0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    Header="Conversions to try, first available wins"
+                    PlaceholderText="ffmpeg:mp4, handbrake:mp4"
+                    Text="{x:Bind Targets, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource CodeTextBoxStyle}" />
+                <TextBox
+                    Grid.Column="1"
+                    Header="Fixed option values, name=value per line"
+                    Text="{x:Bind Options, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    AcceptsReturn="True"
+                    Style="{StaticResource CodeTextBoxStyle}" />
+                <Button
+                    Grid.Column="2"
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    ToolTipService.ToolTip="Remove this step"
+                    Command="{Binding ElementName=Root, Path=ViewModel.RemoveStepCommand}"
+                    CommandParameter="{x:Bind}">
+                    <FontIcon Glyph="&#xE711;" FontSize="12" />
+                </Button>
+            </Grid>
+        </DataTemplate>
+
+        <!-- One row of the tree -->
+        <DataTemplate x:Key="NodeTemplate" x:DataType="vm:ConversionNode">
+            <TreeViewItem ItemsSource="{x:Bind Children}" IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}" AutomationProperties.Name="{x:Bind Title, Mode=OneWay}">
+                <Grid ColumnSpacing="10" Padding="0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="{x:Bind Glyph}" FontSize="14" VerticalAlignment="Top" Margin="0,2,0,0" Opacity="{x:Bind local:ConversionsPage.Dimmed(IsAvailable), Mode=OneWay}" />
+                    <StackPanel Grid.Column="1" Spacing="1">
+                        <TextBlock Text="{x:Bind Title, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{x:Bind Subtitle, Mode=OneWay}" Style="{StaticResource CaptionStyle}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <FontIcon
+                        Grid.Column="2"
+                        Glyph="&#xE73E;"
+                        FontSize="12"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        VerticalAlignment="Center"
+                        ToolTipService.ToolTip="Offered in the Explorer menu"
+                        Visibility="{x:Bind IsOnMenu, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                </Grid>
+            </TreeViewItem>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Padding="{StaticResource PagePadding}" ColumnSpacing="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.ColumnSpan="2">
+            <TextBlock Text="Conversions" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock
+                Text="Every tool Henkan can use, the conversions each one performs, and which of them the Explorer menu offers with what settings. A variant is the same conversion again under another name with other settings, such as MP3 at 320 kbit/s next to the usual MP3."
+                Style="{StaticResource PageSubtitleStyle}" />
+        </StackPanel>
+
+        <!-- The tree -->
+        <Grid Grid.Row="1" RowSpacing="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <DropDownButton ToolTipService.ToolTip="Add">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE710;" FontSize="13" />
+                        <TextBlock Text="Add" />
+                    </StackPanel>
+                    <DropDownButton.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                            <MenuFlyoutItem Text="Variant of this conversion" Command="{x:Bind ViewModel.AddVariantCommand}">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE8EC;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Conversion to this tool" Command="{x:Bind ViewModel.AddConversionCommand}">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE8AB;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem Text="Copy of this conversion" Command="{x:Bind ViewModel.DuplicateConversionCommand}">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE8C8;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator />
+                            <MenuFlyoutItem Text="New tool" Command="{x:Bind ViewModel.NewToolCommand}">
+                                <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE90F;" /></MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+                <Button Command="{x:Bind ViewModel.DeleteCommand}" ToolTipService.ToolTip="Delete">
+                    <FontIcon Glyph="&#xE74D;" FontSize="14" />
+                </Button>
+                <Button Command="{x:Bind ViewModel.MoveConversionCommand}" CommandParameter="up" ToolTipService.ToolTip="Move the conversion up">
+                    <FontIcon Glyph="&#xE70E;" FontSize="14" />
+                </Button>
+                <Button Command="{x:Bind ViewModel.MoveConversionCommand}" CommandParameter="down" ToolTipService.ToolTip="Move the conversion down">
+                    <FontIcon Glyph="&#xE70D;" FontSize="14" />
+                </Button>
+                <Button Command="{x:Bind ViewModel.ReloadCommand}" ToolTipService.ToolTip="Reload and check the tools again">
+                    <FontIcon Glyph="&#xE72C;" FontSize="14" />
+                </Button>
+                <Button Command="{x:Bind ViewModel.OpenFolderCommand}" ToolTipService.ToolTip="Open the folder your own tools are saved in">
+                    <FontIcon Glyph="&#xE838;" FontSize="14" />
+                </Button>
+                <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" Width="20" Height="20" />
+            </StackPanel>
+
+            <TreeView
+                x:Name="Tree"
+                Grid.Row="1"
+                SelectionMode="Single"
+                ItemsSource="{x:Bind ViewModel.Nodes}"
+                ItemTemplate="{StaticResource NodeTemplate}"
+                SelectionChanged="OnTreeSelectionChanged" />
+
+            <ItemsControl Grid.Row="2" ItemsSource="{x:Bind ViewModel.Problems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <InfoBar IsOpen="True" Severity="Warning" Message="{x:Bind}" IsClosable="False" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+
+        <!-- The editor -->
+        <Grid Grid.Row="1" Grid.Column="1" RowSpacing="12" Visibility="{x:Bind ViewModel.HasNode, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{x:Bind ViewModel.HeaderTitle, Mode=OneWay}" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="{x:Bind ViewModel.HeaderDetail, Mode=OneWay}" Style="{StaticResource CaptionStyle}" IsTextSelectionEnabled="True" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <SelectorBar
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    SelectionChanged="OnToolSectionChanged"
+                    Visibility="{x:Bind ViewModel.ShowsToolTabs, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                    <SelectorBarItem Text="Tool" Tag="0" IsSelected="True" />
+                    <SelectorBarItem Text="Options for every conversion" Tag="1" />
+                </SelectorBar>
+                <SelectorBar
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    SelectionChanged="OnConversionSectionChanged"
+                    Visibility="{x:Bind ViewModel.ShowsConversionTabs, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                    <SelectorBarItem x:Name="EntryTab" Text="In the menu" Tag="0" IsSelected="True" />
+                    <SelectorBarItem x:Name="DefinitionTab" Text="How it converts" Tag="1" />
+                </SelectorBar>
+            </Grid>
+
+            <InfoBar
+                Grid.Row="1"
+                IsOpen="True"
+                IsClosable="False"
+                Severity="Informational"
+                Title="Ships with Henkan"
+                Message="Change anything here, then save it as a copy of your own. The original stays as it is, and your menu entries move to the copy."
+                Visibility="{x:Bind ViewModel.ShowsBuiltInNote, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+
+            <ScrollViewer Grid.Row="2" Visibility="{x:Bind ViewModel.ShowsTool, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Spacing="12" Padding="0,0,16,0" MaxWidth="1000" HorizontalAlignment="Stretch">
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="What it is" FontWeight="SemiBold" />
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="170" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Header="Name" Text="{x:Bind ViewModel.Draft.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Grid.Column="1" Header="Identifier" Text="{x:Bind ViewModel.Draft.Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <ComboBox
+                                    Grid.Column="2"
+                                    Header="How it works"
+                                    HorizontalAlignment="Stretch"
+                                    ItemsSource="{x:Bind vm:ConversionsViewModel.Kinds}"
+                                    SelectedItem="{x:Bind ViewModel.Draft.KindName, Mode=TwoWay}" />
+                            </Grid>
+                            <TextBox Header="Description" Text="{x:Bind ViewModel.Draft.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" />
+                            <TextBlock Style="{StaticResource CaptionStyle}" Text="Process runs any command line tool from a template. Archive is 7-Zip. ImageMagick and Office are built in. Pipeline chains other conversions together." />
+                            <NumberBox
+                                Header="Give up after (seconds, 0 for never)"
+                                Value="{x:Bind ViewModel.Draft.TimeoutSeconds, Mode=TwoWay}"
+                                Minimum="0" Maximum="86400"
+                                SpinButtonPlacementMode="Compact"
+                                HorizontalAlignment="Left"
+                                Width="260" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.NeedsExecutable, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="The tool it runs" FontWeight="SemiBold" />
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Header="Executable" Text="{x:Bind ViewModel.Draft.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox Grid.Column="1" Header="Bundled copy, inside the tools folder" Text="{x:Bind ViewModel.Draft.BundledPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                            </Grid>
+                            <TextBox
+                                Header="Also look here, one path per line"
+                                Text="{x:Bind ViewModel.Draft.SearchPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                AcceptsReturn="True"
+                                MinHeight="64"
+                                Style="{StaticResource CodeTextBoxStyle}" />
+                            <Grid ColumnSpacing="8" Visibility="{x:Bind ViewModel.Draft.IsProcess, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Header="Arguments to print its version" Text="{x:Bind ViewModel.Draft.ProbeArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox Grid.Column="1" Header="Pattern that finds the version" Text="{x:Bind ViewModel.Draft.VersionPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox Grid.Column="2" Header="Exit codes that mean success" Text="{x:Bind ViewModel.Draft.SuccessExitCodes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                            <TextBox Header="Website" Text="{x:Bind ViewModel.Draft.HomepageUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="Use my own copy of the tool" Command="{x:Bind ViewModel.SetExecutableCommand}" />
+                                <Button Content="Go back to the bundled one" Command="{x:Bind ViewModel.ClearExecutableCommand}" />
+                                <Button Content="Open the website" Command="{x:Bind ViewModel.OpenHomepageCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.IsProcess, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Command line around every conversion" FontWeight="SemiBold" />
+                            <TextBlock Text="Written once here rather than in every conversion, usually the input before and the output after. Each piece can use {input}, {output}, {inputDir}, {tempDir} and any option by name, and can be limited to when a condition holds." Style="{StaticResource CaptionStyle}" />
+
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Text="Before the conversion's own part" VerticalAlignment="Center" />
+                                <Button HorizontalAlignment="Right" Content="Add" Command="{x:Bind ViewModel.AddFragmentCommand}" CommandParameter="{x:Bind ViewModel.Draft.ArgumentPrefix, Mode=OneWay}" />
+                            </Grid>
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.Draft.ArgumentPrefix, Mode=OneWay}" ItemTemplate="{StaticResource FragmentTemplate}" />
+
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Text="After it" VerticalAlignment="Center" />
+                                <Button HorizontalAlignment="Right" Content="Add" Command="{x:Bind ViewModel.AddFragmentCommand}" CommandParameter="{x:Bind ViewModel.Draft.ArgumentSuffix, Mode=OneWay}" />
+                            </Grid>
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.Draft.ArgumentSuffix, Mode=OneWay}" ItemTemplate="{StaticResource FragmentTemplate}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.IsProcess, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Progress" FontWeight="SemiBold" />
+                            <TextBlock Text="Patterns that read progress from what the tool prints. Leave them empty and the bar simply shows that something is happening." Style="{StaticResource CaptionStyle}" />
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Header="Total length" Text="{x:Bind ViewModel.Draft.DurationPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox Grid.Column="1" Header="Current position" Text="{x:Bind ViewModel.Draft.PositionPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox Grid.Column="2" Header="Percentage" Text="{x:Bind ViewModel.Draft.PercentPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                            </Grid>
+                            <ComboBox
+                                Header="The tool prints its progress to"
+                                ItemsSource="{x:Bind vm:ConversionsViewModel.ProgressStreams}"
+                                SelectedItem="{x:Bind ViewModel.Draft.ProgressStream, Mode=TwoWay}"
+                                Width="260" />
+                            <CheckBox
+                                Content="The tool names its own output file, so point it at a scratch folder and take what appears there"
+                                IsChecked="{x:Bind ViewModel.Draft.UsesTemporaryDirectory, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="2" Visibility="{x:Bind ViewModel.ShowsShared, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Spacing="8" Padding="0,0,16,0" MaxWidth="1000" HorizontalAlignment="Stretch">
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="8">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Options every conversion offers" FontWeight="SemiBold" />
+                                    <TextBlock Text="Shown on top of each conversion's own options, for things that apply to all of them such as extra arguments or hardware acceleration." Style="{StaticResource CaptionStyle}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" VerticalAlignment="Top" Content="Add option" Command="{x:Bind ViewModel.AddOptionCommand}" CommandParameter="{x:Bind ViewModel.Draft.SharedOptions, Mode=OneWay}" />
+                            </Grid>
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.Draft.SharedOptions, Mode=OneWay}" ItemTemplate="{StaticResource OptionTemplate}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="2" Visibility="{x:Bind ViewModel.ShowsEntry, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel Spacing="12" Padding="0,0,16,0" MaxWidth="1000" HorizontalAlignment="Stretch">
+                    <InfoBar
+                        IsOpen="True"
+                        IsClosable="False"
+                        Severity="Warning"
+                        Message="{x:Bind ViewModel.EntryWarning, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.EntryWarning, Mode=OneWay, Converter={StaticResource NullToVisibility}}" />
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Header="Name in the Explorer menu" Text="{x:Bind ViewModel.EntryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <ToggleSwitch Grid.Column="1" Header="Offer it in the menu" IsOn="{x:Bind ViewModel.EntryOnMenu, Mode=TwoWay}" MinWidth="0" />
+                            </Grid>
+                            <TextBlock Text="{x:Bind ViewModel.AcceptedInputs, Mode=OneWay}" Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                            <TextBox
+                                Header="Only offer it for these extensions"
+                                PlaceholderText="Empty offers it for everything the conversion accepts"
+                                Text="{x:Bind ViewModel.EntryExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Settings" FontWeight="SemiBold" />
+                            <TextBlock
+                                Text="{x:Bind ViewModel.EntryDifferences, Mode=OneWay}"
+                                Style="{StaticResource CaptionStyle}"
+                                TextWrapping="Wrap"
+                                Visibility="{x:Bind ViewModel.EntryDifferences, Mode=OneWay, Converter={StaticResource NullToVisibility}}" />
+                            <controls:OptionEditor x:Name="ValuesEditor" ValuesChanged="OnOptionsChanged" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Where the result goes" FontWeight="SemiBold" />
+                            <TextBox
+                                Header="Output path"
+                                Text="{x:Bind ViewModel.OutputPathTemplate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource CodeTextBoxStyle}" />
+                            <TextBlock Style="{StaticResource CaptionStyle}" TextWrapping="Wrap">
+                                <Run Text="Can use {input} {inputDir} {inputName} {inputExt} {inputFileName} {outputExt} and every option by its name. Relative paths start at the input's folder. For example:" />
+                                <Run Text="{x:Bind ViewModel.OutputPreview, Mode=OneWay}" FontFamily="Cascadia Mono, Consolas" />
+                            </TextBlock>
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox
+                                    Header="If the result already exists"
+                                    ItemsSource="{x:Bind vm:ConversionsViewModel.ConflictPolicyLabels}"
+                                    SelectedIndex="{x:Bind ViewModel.ConflictPolicyIndex, Mode=TwoWay}"
+                                    HorizontalAlignment="Stretch" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    Header="Afterwards, the original"
+                                    ItemsSource="{x:Bind vm:ConversionsViewModel.AfterConversionLabels}"
+                                    SelectedIndex="{x:Bind ViewModel.AfterConversionIndex, Mode=TwoWay}"
+                                    HorizontalAlignment="Stretch" />
+                            </Grid>
+                            <TextBox
+                                Header="Folder the original is moved to"
+                                Text="{x:Bind ViewModel.ArchivePathTemplate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource CodeTextBoxStyle}"
+                                Visibility="{x:Bind ViewModel.IsArchive, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.EntryCommandPreview, Mode=OneWay, Converter={StaticResource NullToVisibility}}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="What it runs" FontWeight="SemiBold" />
+                            <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="4" Padding="10,8">
+                                <TextBlock Text="{x:Bind ViewModel.EntryCommandPreview, Mode=OneWay}" Style="{StaticResource MonospaceStyle}" IsTextSelectionEnabled="True" />
+                            </Border>
+                            <TextBlock Text="With these settings, on a sample file. The exact command for each job is in that job's log." Style="{StaticResource CaptionStyle}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="2" Visibility="{x:Bind ViewModel.ShowsDefinition, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel Spacing="12" Padding="0,0,16,0" MaxWidth="1000" HorizontalAlignment="Stretch">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Header="Name" Text="{x:Bind ViewModel.SelectedTarget.Label, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Grid.Column="1" Header="Identifier" Text="{x:Bind ViewModel.SelectedTarget.Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                </Grid>
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Header="Result file extension" PlaceholderText="none, it produces a folder" Text="{x:Bind ViewModel.SelectedTarget.OutputExtension, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Grid.Column="1" Header="Group" PlaceholderText="Audio, Video, Image, Document, Archive" Text="{x:Bind ViewModel.SelectedTarget.Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                                <TextBox
+                                    Header="Accepts"
+                                    PlaceholderText="$audio, $video, mp3, or * for anything"
+                                    Text="{x:Bind ViewModel.SelectedTarget.InputExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBlock Style="{StaticResource CaptionStyle}" Text="Extensions without the dot, separated by commas. A group such as $audio, $video, $image, $raw, $text, $spreadsheet, $presentation, $document, $postscript or $archive stands for all of its members." />
+                                <TextBox Header="Description" Text="{x:Bind ViewModel.SelectedTarget.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" />
+                                <StackPanel Orientation="Horizontal" Spacing="20">
+                                    <CheckBox Content="Takes folders" IsChecked="{x:Bind ViewModel.SelectedTarget.AcceptsFolders, Mode=TwoWay}" />
+                                    <CheckBox Content="One result for a whole selection" IsChecked="{x:Bind ViewModel.SelectedTarget.CombinesInputs, Mode=TwoWay}" />
+                                    <CheckBox Content="Produces a folder" IsChecked="{x:Bind ViewModel.SelectedTarget.OutputIsDirectory, Mode=TwoWay}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.IsProcess, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                            <StackPanel Spacing="8">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Command line" FontWeight="SemiBold" />
+                                        <TextBlock Text="The part this conversion adds between the pieces set on the tool." Style="{StaticResource CaptionStyle}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" VerticalAlignment="Top" Content="Add" Command="{x:Bind ViewModel.AddFragmentCommand}" CommandParameter="{x:Bind ViewModel.SelectedTarget.Arguments, Mode=OneWay}" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedTarget.Arguments, Mode=OneWay}" ItemTemplate="{StaticResource FragmentTemplate}" />
+                                <TextBlock Text="With every option at its default, this runs:" Style="{StaticResource CaptionStyle}" Margin="0,8,0,0" />
+                                <Border Background="{ThemeResource SubtleFillColorSecondaryBrush}" CornerRadius="4" Padding="10,8">
+                                    <TextBlock Text="{x:Bind ViewModel.CommandPreview, Mode=OneWay}" Style="{StaticResource MonospaceStyle}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.UsesOperation, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="What the built-in code does" FontWeight="SemiBold" />
+                                <TextBox Header="Operation" Text="{x:Bind ViewModel.SelectedTarget.Operation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBox
+                                    Header="Settings, one name=value per line"
+                                    Text="{x:Bind ViewModel.SelectedTarget.Settings, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    AcceptsReturn="True"
+                                    MinHeight="64"
+                                    Style="{StaticResource CodeTextBoxStyle}" />
+                                <TextBlock Style="{StaticResource CaptionStyle}" Text="ImageMagick: operation icon or animation. Office: operation word, excel or powerpoint, with mode and format. 7-Zip: format, and operation compress, repack or extract. docs/backends.md lists every value." />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}" Visibility="{x:Bind ViewModel.Draft.IsPipeline, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                            <StackPanel Spacing="8">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Steps" FontWeight="SemiBold" />
+                                        <TextBlock Text="Each step runs a conversion from another backend on what the last one produced. Name several and the first one that is available is used." Style="{StaticResource CaptionStyle}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" VerticalAlignment="Top" Content="Add step" Command="{x:Bind ViewModel.AddStepCommand}" CommandParameter="{x:Bind ViewModel.SelectedTarget, Mode=OneWay}" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedTarget.Steps, Mode=OneWay}" ItemTemplate="{StaticResource StepTemplate}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel Spacing="8">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Options" FontWeight="SemiBold" />
+                                        <TextBlock Text="What the menu entry and its variants let you set. Each option is used in the command line by its name, as {Name}." Style="{StaticResource CaptionStyle}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" VerticalAlignment="Top" Content="Add option" Command="{x:Bind ViewModel.AddOptionCommand}" CommandParameter="{x:Bind ViewModel.SelectedTarget.Options, Mode=OneWay}" />
+                                </Grid>
+                                <ItemsControl ItemsSource="{x:Bind ViewModel.SelectedTarget.Options, Mode=OneWay}" ItemTemplate="{StaticResource OptionTemplate}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+            </ScrollViewer>
+
+            <!-- Saving -->
+            <StackPanel Grid.Row="3" Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="Save" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.SaveCommand}" IsEnabled="{x:Bind ViewModel.IsDirty, Mode=OneWay}" />
+                    <Button
+                        Content="Save as my own copy"
+                        Command="{x:Bind ViewModel.CopyToMineCommand}"
+                        Visibility="{x:Bind ViewModel.ShowsBuiltInNote, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                    <Button Content="Check for problems" Command="{x:Bind ViewModel.ValidateCommand}" />
+                    <Button Content="Undo my changes" Command="{x:Bind ViewModel.RevertCommand}" IsEnabled="{x:Bind ViewModel.IsDirty, Mode=OneWay}" />
+                    <TextBlock
+                        Text="Unsaved changes"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                        Visibility="{x:Bind ViewModel.IsDirty, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                <TextBlock
+                    Text="{x:Bind ViewModel.ValidationText, Mode=OneWay}"
+                    Style="{StaticResource MonospaceStyle}"
+                    Visibility="{x:Bind ViewModel.ValidationText, Mode=OneWay, Converter={StaticResource NullToVisibility}}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

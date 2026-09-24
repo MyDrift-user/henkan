@@ -1,0 +1,50 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Bundled third-party tools fetched by tools/fetch-deps.ps1.
+# Deliberately not committed: the build must succeed without them.
+build/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.DotSettings.user
+
+# MSIX / signing
+*.pfx
+*.cer
+AppPackages/
+BundleArtifacts/
+GeneratedArtifacts/
+_pkginfo.txt
+*.appx
+*.msix
+*.msixbundle
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.assets.json
+
+# Test / coverage
+TestResults/
+*.coverage
+coverage*.xml
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc

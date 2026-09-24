@@ -1,0 +1,26 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <Product>Henkan</Product>
+    <Company>MyDrift</Company>
+    <Authors>MyDrift</Authors>
+    <Copyright>Copyright (C) 2026 MyDrift</Copyright>
+    <Version>0.1.0</Version>
+    <RepositoryUrl>https://github.com/MyDrift-user/henkan</RepositoryUrl>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <!-- Where tools/fetch-deps.ps1 places the optional bundled binaries.
+       Nothing here is required to build; missing tools only remove
+       conversion options at runtime. -->
+  <PropertyGroup>
+    <HenkanToolsDir>$(MSBuildThisFileDirectory)build\tools\</HenkanToolsDir>
+  </PropertyGroup>
+
+</Project>

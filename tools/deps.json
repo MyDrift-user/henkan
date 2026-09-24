@@ -1,0 +1,43 @@
+{
+  "$comment": "Bundled third-party tools. tools/fetch-deps.ps1 downloads each url, verifies sha256, and extracts only the listed files into build/tools/<name>/. Update url and sha256 together.",
+  "tools": [
+    {
+      "name": "ffmpeg",
+      "version": "n9.0.1-27-g9b0578816c (BtbN win64-gpl, autobuild 2026-09-09)",
+      "kind": "zip",
+      "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-09-14-51/ffmpeg-n9.0.1-27-g9b0578816c-win64-gpl-9.0.zip",
+      "sha256": "009defc3694fca082456eef91c46d96efba8b66683cbe379603b306f1fb9bf55",
+      "files": [
+        "ffmpeg.exe",
+        "LICENSE.txt"
+      ],
+      "license": "GPL-3.0"
+    },
+    {
+      "name": "gs",
+      "version": "10.06.0",
+      "kind": "nsis",
+      "url": "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10060/gs10060w64.exe",
+      "sha256": "8d552205c0fe87a16bac2f377c8a1b090cfcbc610db7c281bd6a646b39c9c468",
+      "files": [
+        "gswin64c.exe",
+        "gsdll64.dll"
+      ],
+      "licenseUrl": "https://raw.githubusercontent.com/ArtifexSoftware/ghostpdl/master/LICENSE",
+      "license": "AGPL-3.0"
+    },
+    {
+      "name": "7zip",
+      "version": "25.01",
+      "kind": "msi",
+      "url": "https://www.7-zip.org/a/7z2501-x64.msi",
+      "sha256": "e7eb0b7ed5efa4e087b7b17f191797f7af5b7f442d1290c66f3a21777005ef57",
+      "files": [
+        "7z.exe",
+        "7z.dll",
+        "License.txt"
+      ],
+      "license": "LGPL-2.1-or-later, with the unRAR code under its own restriction"
+    }
+  ]
+}

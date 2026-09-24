@@ -1,0 +1,13 @@
+* text=auto eol=crlf
+
+*.sh text eol=lf
+*.cs text diff=csharp
+*.xaml text
+*.json text
+*.md text
+
+*.png binary
+*.ico binary
+*.exe binary
+*.dll binary
+*.pfx binary

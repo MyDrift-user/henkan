@@ -1,0 +1,3392 @@
+{
+  "id": "ffmpeg",
+  "name": "FFmpeg",
+  "description": "Audio and video conversion through the bundled ffmpeg executable.",
+  "kind": "process",
+  "executable": {
+    "fileName": "ffmpeg.exe",
+    "bundledPath": "ffmpeg/ffmpeg.exe",
+    "probeArguments": [
+      "-version"
+    ],
+    "versionPattern": "ffmpeg version (\\S+)",
+    "homepageUrl": "https://ffmpeg.org/"
+  },
+  "successExitCodes": [
+    0
+  ],
+  "progress": {
+    "stream": "standardError",
+    "durationPattern": "Duration: (\\d+):(\\d+):(\\d+\\.?\\d*)",
+    "positionPattern": "time=(\\d+):(\\d+):(\\d+\\.?\\d*)"
+  },
+  "sharedOptions": [
+    {
+      "id": "ExtraArguments",
+      "label": "Extra arguments",
+      "description": "Appended verbatim before the output file. For anything the options above do not cover.",
+      "kind": "text",
+      "group": "Advanced",
+      "advanced": true
+    }
+  ],
+  "argumentPrefix": [
+    {
+      "value": "-hide_banner -nostdin -y -i \"{input}\""
+    }
+  ],
+  "argumentSuffix": [
+    {
+      "value": "{ExtraArguments}",
+      "splitAfterExpansion": true,
+      "comment": "Empty when the option is blank, so nothing is added."
+    },
+    {
+      "value": "\"{output}\""
+    }
+  ],
+  "targets": [
+    {
+      "id": "mp3",
+      "label": "MP3",
+      "outputExtension": "mp3",
+      "category": "Audio",
+      "description": "MPEG layer 3 through libmp3lame.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Mode",
+          "label": "Rate control",
+          "kind": "choice",
+          "default": "Bitrate",
+          "choices": [
+            {
+              "value": "Bitrate",
+              "label": "Constant bitrate"
+            },
+            {
+              "value": "VBR",
+              "label": "Variable bitrate (quality)"
+            }
+          ]
+        },
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "192",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "64"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "description": "0 is best, 9 is smallest.",
+          "kind": "range",
+          "default": "2",
+          "minimum": 0,
+          "maximum": 9,
+          "step": 1,
+          "visibleWhen": "Mode == 'VBR'"
+        },
+        {
+          "id": "SampleRate",
+          "label": "Sample rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "Hz",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "22050"
+            },
+            {
+              "value": "44100"
+            },
+            {
+              "value": "48000"
+            }
+          ]
+        },
+        {
+          "id": "Channels",
+          "label": "Channels",
+          "kind": "choice",
+          "default": "Keep",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1",
+              "label": "Mono"
+            },
+            {
+              "value": "2",
+              "label": "Stereo"
+            }
+          ]
+        },
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true",
+          "group": "Audio"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a libmp3lame"
+        },
+        {
+          "value": "-b:a {Bitrate}k",
+          "when": "Mode == 'Bitrate'"
+        },
+        {
+          "value": "-q:a {Quality}",
+          "when": "Mode == 'VBR'"
+        },
+        {
+          "value": "-ar {SampleRate}",
+          "when": "SampleRate != 'Keep'"
+        },
+        {
+          "value": "-ac {Channels}",
+          "when": "Channels != 'Keep'"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        }
+      ]
+    },
+    {
+      "id": "aac",
+      "label": "AAC (M4A)",
+      "outputExtension": "m4a",
+      "category": "Audio",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "192",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "64"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        },
+        {
+          "id": "SampleRate",
+          "label": "Sample rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "Hz",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "44100"
+            },
+            {
+              "value": "48000"
+            }
+          ]
+        },
+        {
+          "id": "Channels",
+          "label": "Channels",
+          "kind": "choice",
+          "default": "Keep",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1",
+              "label": "Mono"
+            },
+            {
+              "value": "2",
+              "label": "Stereo"
+            }
+          ]
+        },
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a aac -b:a {Bitrate}k"
+        },
+        {
+          "value": "-ar {SampleRate}",
+          "when": "SampleRate != 'Keep'"
+        },
+        {
+          "value": "-ac {Channels}",
+          "when": "Channels != 'Keep'"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ]
+    },
+    {
+      "id": "flac",
+      "label": "FLAC",
+      "outputExtension": "flac",
+      "category": "Audio",
+      "description": "Lossless.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Compression",
+          "label": "Compression level",
+          "description": "Higher is smaller and slower. Never affects quality.",
+          "kind": "range",
+          "default": "5",
+          "minimum": 0,
+          "maximum": 12,
+          "step": 1
+        },
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a flac -compression_level {Compression}"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        }
+      ]
+    },
+    {
+      "id": "ogg",
+      "label": "OGG Vorbis",
+      "outputExtension": "ogg",
+      "category": "Audio",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "description": "-1 is smallest, 10 is best. 5 is roughly 160 kbit/s.",
+          "kind": "range",
+          "default": "5",
+          "minimum": -1,
+          "maximum": 10,
+          "step": 1
+        },
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a libvorbis -q:a {Quality}"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        }
+      ]
+    },
+    {
+      "id": "opus",
+      "label": "Opus",
+      "outputExtension": "opus",
+      "category": "Audio",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "128",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "32"
+            },
+            {
+              "value": "48"
+            },
+            {
+              "value": "64"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        },
+        {
+          "id": "Application",
+          "label": "Tuning",
+          "kind": "choice",
+          "default": "audio",
+          "choices": [
+            {
+              "value": "audio",
+              "label": "Music"
+            },
+            {
+              "value": "voip",
+              "label": "Speech"
+            },
+            {
+              "value": "lowdelay",
+              "label": "Low delay"
+            }
+          ]
+        },
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a libopus -b:a {Bitrate}k -application {Application}"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        }
+      ]
+    },
+    {
+      "id": "wav",
+      "label": "WAV",
+      "outputExtension": "wav",
+      "category": "Audio",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "BitDepth",
+          "label": "Bit depth",
+          "kind": "choice",
+          "default": "pcm_s16le",
+          "choices": [
+            {
+              "value": "pcm_s16le",
+              "label": "16 bit"
+            },
+            {
+              "value": "pcm_s24le",
+              "label": "24 bit"
+            },
+            {
+              "value": "pcm_s32le",
+              "label": "32 bit"
+            },
+            {
+              "value": "pcm_f32le",
+              "label": "32 bit float"
+            }
+          ]
+        },
+        {
+          "id": "SampleRate",
+          "label": "Sample rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "Hz",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "44100"
+            },
+            {
+              "value": "48000"
+            },
+            {
+              "value": "96000"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a {BitDepth}"
+        },
+        {
+          "value": "-ar {SampleRate}",
+          "when": "SampleRate != 'Keep'"
+        }
+      ]
+    },
+    {
+      "id": "mp4",
+      "label": "MP4",
+      "outputExtension": "mp4",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libx264",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libx264",
+              "label": "H.264 (software)"
+            },
+            {
+              "value": "libx265",
+              "label": "H.265 / HEVC (software)"
+            },
+            {
+              "value": "h264_nvenc",
+              "label": "H.264 (NVIDIA NVENC)"
+            },
+            {
+              "value": "hevc_nvenc",
+              "label": "H.265 (NVIDIA NVENC)"
+            },
+            {
+              "value": "h264_qsv",
+              "label": "H.264 (Intel Quick Sync)"
+            },
+            {
+              "value": "h264_amf",
+              "label": "H.264 (AMD AMF)"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            }
+          ]
+        },
+        {
+          "id": "RateControl",
+          "label": "Rate control",
+          "kind": "choice",
+          "default": "CRF",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "CRF",
+              "label": "Constant quality"
+            },
+            {
+              "value": "Bitrate",
+              "label": "Target bitrate"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "description": "Lower is better. 18 is visually lossless, 28 is small.",
+          "kind": "range",
+          "default": "23",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'CRF'"
+        },
+        {
+          "id": "VideoBitrate",
+          "label": "Video bitrate",
+          "kind": "integer",
+          "default": "4000",
+          "unit": "kbit/s",
+          "minimum": 100,
+          "maximum": 100000,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'Bitrate'"
+        },
+        {
+          "id": "Preset",
+          "label": "Encoder speed",
+          "description": "Slower presets give smaller files at the same quality.",
+          "kind": "choice",
+          "default": "medium",
+          "group": "Video",
+          "visibleWhen": "VideoCodec == 'libx264' || VideoCodec == 'libx265'",
+          "choices": [
+            {
+              "value": "ultrafast"
+            },
+            {
+              "value": "superfast"
+            },
+            {
+              "value": "veryfast"
+            },
+            {
+              "value": "faster"
+            },
+            {
+              "value": "fast"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "slow"
+            },
+            {
+              "value": "slower"
+            },
+            {
+              "value": "veryslow"
+            }
+          ]
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "2160",
+              "label": "2160 (4K)"
+            },
+            {
+              "value": "1440"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "fps",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "24"
+            },
+            {
+              "value": "25"
+            },
+            {
+              "value": "30"
+            },
+            {
+              "value": "50"
+            },
+            {
+              "value": "60"
+            }
+          ]
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "aac",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "none",
+              "label": "Remove audio"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "160",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "visibleWhen": "AudioCodec == 'aac'",
+          "choices": [
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf}",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && (VideoCodec == 'libx264' || VideoCodec == 'libx265')"
+        },
+        {
+          "value": "-cq {Crf} -b:v 0",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && (VideoCodec == 'h264_nvenc' || VideoCodec == 'hevc_nvenc')",
+          "comment": "NVENC spells constant quality differently."
+        },
+        {
+          "value": "-global_quality {Crf}",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && VideoCodec == 'h264_qsv'"
+        },
+        {
+          "value": "-b:v {VideoBitrate}k",
+          "when": "VideoCodec != 'copy' && RateControl == 'Bitrate'"
+        },
+        {
+          "value": "-preset {Preset}",
+          "when": "VideoCodec == 'libx264' || VideoCodec == 'libx265'"
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "when": "VideoCodec == 'libx264'",
+          "comment": "Widest player compatibility."
+        },
+        {
+          "value": "-tag:v hvc1",
+          "when": "VideoCodec == 'libx265' || VideoCodec == 'hevc_nvenc'",
+          "comment": "Lets Apple players open HEVC in MP4."
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "VideoCodec != 'copy' && Scale != 'Keep'"
+        },
+        {
+          "value": "-r {FrameRate}",
+          "when": "VideoCodec != 'copy' && FrameRate != 'Keep'"
+        },
+        {
+          "value": "-c:a aac -b:a {AudioBitrate}k",
+          "when": "AudioCodec == 'aac'"
+        },
+        {
+          "value": "-c:a copy",
+          "when": "AudioCodec == 'copy'"
+        },
+        {
+          "value": "-an",
+          "when": "AudioCodec == 'none'"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ]
+    },
+    {
+      "id": "mkv",
+      "label": "MKV",
+      "outputExtension": "mkv",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libx264",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libx264",
+              "label": "H.264"
+            },
+            {
+              "value": "libx265",
+              "label": "H.265 / HEVC"
+            },
+            {
+              "value": "libvpx-vp9",
+              "label": "VP9"
+            },
+            {
+              "value": "libaom-av1",
+              "label": "AV1"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "kind": "range",
+          "default": "23",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'"
+        },
+        {
+          "id": "Preset",
+          "label": "Encoder speed",
+          "kind": "choice",
+          "default": "medium",
+          "group": "Video",
+          "visibleWhen": "VideoCodec == 'libx264' || VideoCodec == 'libx265'",
+          "choices": [
+            {
+              "value": "ultrafast"
+            },
+            {
+              "value": "veryfast"
+            },
+            {
+              "value": "fast"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "slow"
+            },
+            {
+              "value": "veryslow"
+            }
+          ]
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "2160"
+            },
+            {
+              "value": "1440"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            }
+          ]
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "copy",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "libopus",
+              "label": "Opus"
+            },
+            {
+              "value": "flac",
+              "label": "FLAC"
+            },
+            {
+              "value": "none",
+              "label": "Remove audio"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "160",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "visibleWhen": "AudioCodec == 'aac' || AudioCodec == 'libopus'",
+          "choices": [
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-map 0",
+          "comment": "Keep every stream, including subtitles."
+        },
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf}",
+          "when": "VideoCodec != 'copy'"
+        },
+        {
+          "value": "-b:v 0",
+          "when": "VideoCodec == 'libvpx-vp9' || VideoCodec == 'libaom-av1'",
+          "comment": "Required for CRF mode with these encoders."
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "when": "VideoCodec != 'copy'"
+        },
+        {
+          "value": "-preset {Preset}",
+          "when": "VideoCodec == 'libx264' || VideoCodec == 'libx265'"
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "VideoCodec != 'copy' && Scale != 'Keep'"
+        },
+        {
+          "value": "-c:a {AudioCodec}",
+          "when": "AudioCodec != 'none'"
+        },
+        {
+          "value": "-b:a {AudioBitrate}k",
+          "when": "AudioCodec == 'aac' || AudioCodec == 'libopus'"
+        },
+        {
+          "value": "-an",
+          "when": "AudioCodec == 'none'"
+        },
+        {
+          "value": "-c:s copy",
+          "when": "AudioCodec != 'none'"
+        }
+      ]
+    },
+    {
+      "id": "webm",
+      "label": "WebM",
+      "outputExtension": "webm",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libvpx-vp9",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libvpx-vp9",
+              "label": "VP9"
+            },
+            {
+              "value": "libaom-av1",
+              "label": "AV1"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "description": "Lower is better. 31 is a good VP9 default.",
+          "kind": "range",
+          "default": "31",
+          "minimum": 0,
+          "maximum": 63,
+          "step": 1,
+          "group": "Video"
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate (Opus)",
+          "kind": "choice",
+          "default": "128",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "64"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec} -crf {Crf} -b:v 0"
+        },
+        {
+          "value": "-row-mt 1",
+          "when": "VideoCodec == 'libvpx-vp9'",
+          "comment": "Use all cores."
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "Scale != 'Keep'"
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "comment": "A GIF or PNG source decodes with an alpha channel, which VP9 and AV1 refuse."
+        },
+        {
+          "value": "-c:a libopus -b:a {AudioBitrate}k"
+        }
+      ]
+    },
+    {
+      "id": "avi",
+      "label": "AVI",
+      "outputExtension": "avi",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif"
+      ],
+      "options": [
+        {
+          "id": "VideoBitrate",
+          "label": "Video bitrate",
+          "kind": "integer",
+          "default": "4000",
+          "unit": "kbit/s",
+          "minimum": 100,
+          "maximum": 50000
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate (MP3)",
+          "kind": "choice",
+          "default": "192",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v mpeg4 -vtag xvid -b:v {VideoBitrate}k -pix_fmt yuv420p -c:a libmp3lame -b:a {AudioBitrate}k"
+        }
+      ]
+    },
+    {
+      "id": "gif",
+      "label": "GIF (from video)",
+      "outputExtension": "gif",
+      "category": "Video",
+      "description": "Two-pass palette generation for a GIF that does not look like 1998.",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "range",
+          "default": "12",
+          "minimum": 1,
+          "maximum": 30,
+          "step": 1,
+          "unit": "fps"
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "integer",
+          "default": "480",
+          "minimum": 16,
+          "maximum": 1920,
+          "unit": "px"
+        },
+        {
+          "id": "Dither",
+          "label": "Dithering",
+          "kind": "choice",
+          "default": "bayer",
+          "choices": [
+            {
+              "value": "none"
+            },
+            {
+              "value": "bayer"
+            },
+            {
+              "value": "floyd_steinberg",
+              "label": "Floyd-Steinberg"
+            },
+            {
+              "value": "sierra2_4a"
+            }
+          ]
+        },
+        {
+          "id": "Loop",
+          "label": "Loop forever",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-filter_complex \"scale={Width}:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse=dither={Dither}\""
+        },
+        {
+          "value": "-r {FrameRate}",
+          "comment": "An output rate rather than an fps filter, so a single frame input is held rather than dropped."
+        },
+        {
+          "value": "-loop 0",
+          "when": "Loop"
+        },
+        {
+          "value": "-loop -1",
+          "when": "!Loop"
+        }
+      ]
+    },
+    {
+      "id": "wma",
+      "label": "WMA",
+      "outputExtension": "wma",
+      "category": "Audio",
+      "description": "Windows Media Audio, for players that accept nothing newer.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "192",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "64"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        },
+        {
+          "id": "SampleRate",
+          "label": "Sample rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "Hz",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "44100"
+            },
+            {
+              "value": "48000"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a wmav2 -b:a {Bitrate}k"
+        },
+        {
+          "value": "-ar {SampleRate}",
+          "when": "SampleRate != 'Keep'"
+        }
+      ]
+    },
+    {
+      "id": "ac3",
+      "label": "AC-3",
+      "outputExtension": "ac3",
+      "category": "Audio",
+      "description": "Dolby Digital, the surround format home cinema receivers expect.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "448",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            },
+            {
+              "value": "384"
+            },
+            {
+              "value": "448"
+            },
+            {
+              "value": "640"
+            }
+          ]
+        },
+        {
+          "id": "Channels",
+          "label": "Channels",
+          "kind": "choice",
+          "default": "Keep",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "2",
+              "label": "Stereo"
+            },
+            {
+              "value": "6",
+              "label": "5.1"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a ac3 -b:a {Bitrate}k"
+        },
+        {
+          "value": "-ac {Channels}",
+          "when": "Channels != 'Keep'"
+        }
+      ]
+    },
+    {
+      "id": "aiff",
+      "label": "AIFF",
+      "outputExtension": "aiff",
+      "category": "Audio",
+      "description": "Uncompressed, the way WAV is, but at home on a Mac.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "BitDepth",
+          "label": "Bit depth",
+          "kind": "choice",
+          "default": "pcm_s16be",
+          "choices": [
+            {
+              "value": "pcm_s16be",
+              "label": "16 bit"
+            },
+            {
+              "value": "pcm_s24be",
+              "label": "24 bit"
+            },
+            {
+              "value": "pcm_s32be",
+              "label": "32 bit"
+            }
+          ]
+        },
+        {
+          "id": "SampleRate",
+          "label": "Sample rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "Hz",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "44100"
+            },
+            {
+              "value": "48000"
+            },
+            {
+              "value": "96000"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a {BitDepth}"
+        },
+        {
+          "value": "-ar {SampleRate}",
+          "when": "SampleRate != 'Keep'"
+        }
+      ]
+    },
+    {
+      "id": "alac",
+      "label": "ALAC (Apple Lossless)",
+      "outputExtension": "m4a",
+      "category": "Audio",
+      "description": "Lossless in a container iTunes and iOS will open.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a alac"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        }
+      ]
+    },
+    {
+      "id": "mka",
+      "label": "Matroska audio (MKA)",
+      "outputExtension": "mka",
+      "category": "Audio",
+      "description": "Holds any audio codec, including several tracks at once.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "AudioCodec",
+          "label": "Audio codec",
+          "kind": "choice",
+          "default": "copy",
+          "choices": [
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "flac",
+              "label": "FLAC"
+            },
+            {
+              "value": "libopus",
+              "label": "Opus"
+            },
+            {
+              "value": "libvorbis",
+              "label": "Vorbis"
+            },
+            {
+              "value": "aac",
+              "label": "AAC"
+            }
+          ]
+        },
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "160",
+          "unit": "kbit/s",
+          "visibleWhen": "AudioCodec == 'libopus' || AudioCodec == 'aac'",
+          "choices": [
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a {AudioCodec}"
+        },
+        {
+          "value": "-b:a {Bitrate}k",
+          "when": "AudioCodec == 'libopus' || AudioCodec == 'aac'"
+        }
+      ]
+    },
+    {
+      "id": "mov",
+      "label": "QuickTime (MOV)",
+      "outputExtension": "mov",
+      "category": "Video",
+      "description": "Including ProRes, which is what editing software wants as an intermediate.",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libx264",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libx264",
+              "label": "H.264"
+            },
+            {
+              "value": "libx265",
+              "label": "H.265 / HEVC"
+            },
+            {
+              "value": "prores_ks",
+              "label": "Apple ProRes"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "kind": "range",
+          "default": "20",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec == 'libx264' || VideoCodec == 'libx265'"
+        },
+        {
+          "id": "ProResProfile",
+          "label": "ProRes profile",
+          "kind": "choice",
+          "default": "3",
+          "group": "Video",
+          "visibleWhen": "VideoCodec == 'prores_ks'",
+          "choices": [
+            {
+              "value": "0",
+              "label": "Proxy"
+            },
+            {
+              "value": "1",
+              "label": "LT"
+            },
+            {
+              "value": "2",
+              "label": "Standard"
+            },
+            {
+              "value": "3",
+              "label": "HQ"
+            },
+            {
+              "value": "4",
+              "label": "4444"
+            }
+          ]
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "aac",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "pcm_s16le",
+              "label": "Uncompressed"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "none",
+              "label": "Remove audio"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf}",
+          "when": "VideoCodec == 'libx264' || VideoCodec == 'libx265'"
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "when": "VideoCodec == 'libx264'"
+        },
+        {
+          "value": "-profile:v {ProResProfile} -pix_fmt yuv422p10le",
+          "when": "VideoCodec == 'prores_ks'"
+        },
+        {
+          "value": "-c:a {AudioCodec}",
+          "when": "AudioCodec != 'none'"
+        },
+        {
+          "value": "-an",
+          "when": "AudioCodec == 'none'"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ]
+    },
+    {
+      "id": "wmv",
+      "label": "WMV",
+      "outputExtension": "wmv",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif"
+      ],
+      "options": [
+        {
+          "id": "VideoBitrate",
+          "label": "Video bitrate",
+          "kind": "integer",
+          "default": "3000",
+          "unit": "kbit/s",
+          "minimum": 100,
+          "maximum": 50000,
+          "group": "Video"
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "192",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v wmv2 -b:v {VideoBitrate}k -pix_fmt yuv420p"
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "Scale != 'Keep'"
+        },
+        {
+          "value": "-c:a wmav2 -b:a {AudioBitrate}k"
+        }
+      ]
+    },
+    {
+      "id": "ogv",
+      "label": "Ogg Theora",
+      "outputExtension": "ogv",
+      "category": "Video",
+      "description": "Patent-free video for anywhere WebM is not an option.",
+      "inputExtensions": [
+        "$video",
+        "gif"
+      ],
+      "options": [
+        {
+          "id": "Quality",
+          "label": "Video quality",
+          "description": "0 is smallest, 10 is best.",
+          "kind": "range",
+          "default": "7",
+          "minimum": 0,
+          "maximum": 10,
+          "step": 1,
+          "group": "Video"
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "AudioQuality",
+          "label": "Audio quality",
+          "kind": "range",
+          "default": "5",
+          "minimum": -1,
+          "maximum": 10,
+          "step": 1,
+          "group": "Audio"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v libtheora -q:v {Quality} -pix_fmt yuv420p"
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "Scale != 'Keep'"
+        },
+        {
+          "value": "-c:a libvorbis -q:a {AudioQuality}"
+        }
+      ]
+    },
+    {
+      "id": "mpg",
+      "label": "MPEG-2",
+      "outputExtension": "mpg",
+      "category": "Video",
+      "description": "What DVD authoring tools and older set-top boxes read.",
+      "inputExtensions": [
+        "$video",
+        "gif"
+      ],
+      "options": [
+        {
+          "id": "VideoBitrate",
+          "label": "Video bitrate",
+          "kind": "integer",
+          "default": "5000",
+          "unit": "kbit/s",
+          "minimum": 100,
+          "maximum": 50000,
+          "group": "Video"
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "576",
+              "label": "576 (PAL)"
+            },
+            {
+              "value": "480",
+              "label": "480 (NTSC)"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "224",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "128"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "224"
+            },
+            {
+              "value": "384"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v mpeg2video -b:v {VideoBitrate}k -pix_fmt yuv420p"
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "Scale != 'Keep'"
+        },
+        {
+          "value": "-c:a mp2 -b:a {AudioBitrate}k"
+        }
+      ]
+    },
+    {
+      "id": "ts",
+      "label": "MPEG transport stream (TS)",
+      "outputExtension": "ts",
+      "category": "Video",
+      "description": "Streamable and safe to cut anywhere, which is why broadcast uses it.",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "copy",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "libx264",
+              "label": "H.264"
+            },
+            {
+              "value": "libx265",
+              "label": "H.265 / HEVC"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "kind": "range",
+          "default": "23",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'"
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "copy",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "ac3",
+              "label": "AC-3"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf}",
+          "when": "VideoCodec != 'copy'"
+        },
+        {
+          "value": "-c:a {AudioCodec}"
+        },
+        {
+          "value": "-f mpegts"
+        }
+      ]
+    },
+    {
+      "id": "webp-animated",
+      "label": "Animated WebP",
+      "outputExtension": "webp",
+      "category": "Video",
+      "description": "A GIF replacement at a fraction of the size, with all its colours.",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng"
+      ],
+      "options": [
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "range",
+          "default": "15",
+          "minimum": 1,
+          "maximum": 50,
+          "step": 1,
+          "unit": "fps"
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "integer",
+          "default": "640",
+          "minimum": 16,
+          "maximum": 4096,
+          "unit": "px"
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "75",
+          "minimum": 0,
+          "maximum": 100,
+          "step": 1
+        },
+        {
+          "id": "Loop",
+          "label": "Loop forever",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v libwebp_anim -lossless 0 -q:v {Quality} -an"
+        },
+        {
+          "value": "-vf scale={Width}:-2:flags=lanczos"
+        },
+        {
+          "value": "-r {FrameRate}"
+        },
+        {
+          "value": "-loop 0",
+          "when": "Loop"
+        },
+        {
+          "value": "-loop 1",
+          "when": "!Loop"
+        }
+      ]
+    },
+    {
+      "id": "frame-png",
+      "label": "PNG (single frame)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": "Grabs one frame, for a thumbnail or a poster image.",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Time",
+          "label": "Position",
+          "description": "Where to take the frame, as hh:mm:ss.",
+          "kind": "text",
+          "default": "00:00:01"
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1920"
+            },
+            {
+              "value": "1280"
+            },
+            {
+              "value": "640"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-ss {Time} -frames:v 1 -update 1 -an",
+          "comment": "Placed after -i so the seek is exact rather than fast."
+        },
+        {
+          "value": "-vf scale={Width}:-2",
+          "when": "Width != 'Keep'"
+        }
+      ]
+    },
+    {
+      "id": "apng",
+      "label": "Animated PNG",
+      "outputExtension": "apng",
+      "category": "Video",
+      "description": "An animated GIF without the 256 colour limit, and with real transparency.",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "range",
+          "default": "15",
+          "minimum": 1,
+          "maximum": 50,
+          "step": 1,
+          "unit": "fps"
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "integer",
+          "default": "480",
+          "minimum": 16,
+          "maximum": 4096,
+          "unit": "px"
+        },
+        {
+          "id": "Loop",
+          "label": "Loop forever",
+          "kind": "boolean",
+          "default": "true"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v apng -an"
+        },
+        {
+          "value": "-vf scale={Width}:-2:flags=lanczos"
+        },
+        {
+          "value": "-r {FrameRate}"
+        },
+        {
+          "value": "-plays 0",
+          "when": "Loop"
+        },
+        {
+          "value": "-plays 1",
+          "when": "!Loop"
+        }
+      ]
+    },
+    {
+      "id": "mp4-hevc",
+      "label": "MP4 (H.265, smaller)",
+      "outputExtension": "mp4",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libx265",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libx264",
+              "label": "H.264 (software)"
+            },
+            {
+              "value": "libx265",
+              "label": "H.265 / HEVC (software)"
+            },
+            {
+              "value": "h264_nvenc",
+              "label": "H.264 (NVIDIA NVENC)"
+            },
+            {
+              "value": "hevc_nvenc",
+              "label": "H.265 (NVIDIA NVENC)"
+            },
+            {
+              "value": "h264_qsv",
+              "label": "H.264 (Intel Quick Sync)"
+            },
+            {
+              "value": "h264_amf",
+              "label": "H.264 (AMD AMF)"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            }
+          ]
+        },
+        {
+          "id": "RateControl",
+          "label": "Rate control",
+          "kind": "choice",
+          "default": "CRF",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "CRF",
+              "label": "Constant quality"
+            },
+            {
+              "value": "Bitrate",
+              "label": "Target bitrate"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "description": "Lower is better. 18 is visually lossless, 28 is small.",
+          "kind": "range",
+          "default": "28",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'CRF'"
+        },
+        {
+          "id": "VideoBitrate",
+          "label": "Video bitrate",
+          "kind": "integer",
+          "default": "4000",
+          "unit": "kbit/s",
+          "minimum": 100,
+          "maximum": 100000,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'Bitrate'"
+        },
+        {
+          "id": "Preset",
+          "label": "Encoder speed",
+          "description": "Slower presets give smaller files at the same quality.",
+          "kind": "choice",
+          "default": "medium",
+          "group": "Video",
+          "visibleWhen": "VideoCodec == 'libx264' || VideoCodec == 'libx265'",
+          "choices": [
+            {
+              "value": "ultrafast"
+            },
+            {
+              "value": "superfast"
+            },
+            {
+              "value": "veryfast"
+            },
+            {
+              "value": "faster"
+            },
+            {
+              "value": "fast"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "slow"
+            },
+            {
+              "value": "slower"
+            },
+            {
+              "value": "veryslow"
+            }
+          ]
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "2160",
+              "label": "2160 (4K)"
+            },
+            {
+              "value": "1440"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "fps",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "24"
+            },
+            {
+              "value": "25"
+            },
+            {
+              "value": "30"
+            },
+            {
+              "value": "50"
+            },
+            {
+              "value": "60"
+            }
+          ]
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "aac",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "none",
+              "label": "Remove audio"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "160",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "visibleWhen": "AudioCodec == 'aac'",
+          "choices": [
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf}",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && (VideoCodec == 'libx264' || VideoCodec == 'libx265')"
+        },
+        {
+          "value": "-cq {Crf} -b:v 0",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && (VideoCodec == 'h264_nvenc' || VideoCodec == 'hevc_nvenc')",
+          "comment": "NVENC spells constant quality differently."
+        },
+        {
+          "value": "-global_quality {Crf}",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && VideoCodec == 'h264_qsv'"
+        },
+        {
+          "value": "-b:v {VideoBitrate}k",
+          "when": "VideoCodec != 'copy' && RateControl == 'Bitrate'"
+        },
+        {
+          "value": "-preset {Preset}",
+          "when": "VideoCodec == 'libx264' || VideoCodec == 'libx265'"
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "when": "VideoCodec == 'libx264'",
+          "comment": "Widest player compatibility."
+        },
+        {
+          "value": "-tag:v hvc1",
+          "when": "VideoCodec == 'libx265' || VideoCodec == 'hevc_nvenc'",
+          "comment": "Lets Apple players open HEVC in MP4."
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "VideoCodec != 'copy' && Scale != 'Keep'"
+        },
+        {
+          "value": "-r {FrameRate}",
+          "when": "VideoCodec != 'copy' && FrameRate != 'Keep'"
+        },
+        {
+          "value": "-c:a aac -b:a {AudioBitrate}k",
+          "when": "AudioCodec == 'aac'"
+        },
+        {
+          "value": "-c:a copy",
+          "when": "AudioCodec == 'copy'"
+        },
+        {
+          "value": "-an",
+          "when": "AudioCodec == 'none'"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ],
+      "description": "About half the size of H.264 at the same quality. Plays on anything recent."
+    },
+    {
+      "id": "mp4-av1",
+      "label": "MP4 (AV1, smallest)",
+      "outputExtension": "mp4",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libsvtav1",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libsvtav1",
+              "label": "AV1 (SVT-AV1)"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            }
+          ]
+        },
+        {
+          "id": "RateControl",
+          "label": "Rate control",
+          "kind": "choice",
+          "default": "CRF",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "CRF",
+              "label": "Constant quality"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "description": "Lower is better. 18 is visually lossless, 28 is small.",
+          "kind": "range",
+          "default": "35",
+          "minimum": 0,
+          "maximum": 63,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'CRF'"
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "2160",
+              "label": "2160 (4K)"
+            },
+            {
+              "value": "1440"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "fps",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "24"
+            },
+            {
+              "value": "25"
+            },
+            {
+              "value": "30"
+            },
+            {
+              "value": "50"
+            },
+            {
+              "value": "60"
+            }
+          ]
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "aac",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "none",
+              "label": "Remove audio"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "160",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "visibleWhen": "AudioCodec == 'aac'",
+          "choices": [
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf} -preset 8",
+          "when": "VideoCodec == 'libsvtav1'",
+          "comment": "Preset 8 is the usual balance of speed and size for SVT-AV1."
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "when": "VideoCodec == 'libsvtav1'"
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "VideoCodec != 'copy' && Scale != 'Keep'"
+        },
+        {
+          "value": "-r {FrameRate}",
+          "when": "VideoCodec != 'copy' && FrameRate != 'Keep'"
+        },
+        {
+          "value": "-c:a aac -b:a {AudioBitrate}k",
+          "when": "AudioCodec == 'aac'"
+        },
+        {
+          "value": "-c:a copy",
+          "when": "AudioCodec == 'copy'"
+        },
+        {
+          "value": "-an",
+          "when": "AudioCodec == 'none'"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ],
+      "description": "The most efficient codec here, and the slowest to encode. Needs a player from the last few years."
+    },
+    {
+      "id": "m4v",
+      "label": "M4V (Apple)",
+      "outputExtension": "m4v",
+      "category": "Video",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "VideoCodec",
+          "label": "Video codec",
+          "kind": "choice",
+          "default": "libx264",
+          "group": "Video",
+          "choices": [
+            {
+              "value": "libx264",
+              "label": "H.264 (software)"
+            },
+            {
+              "value": "libx265",
+              "label": "H.265 / HEVC (software)"
+            },
+            {
+              "value": "h264_nvenc",
+              "label": "H.264 (NVIDIA NVENC)"
+            },
+            {
+              "value": "hevc_nvenc",
+              "label": "H.265 (NVIDIA NVENC)"
+            },
+            {
+              "value": "h264_qsv",
+              "label": "H.264 (Intel Quick Sync)"
+            },
+            {
+              "value": "h264_amf",
+              "label": "H.264 (AMD AMF)"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            }
+          ]
+        },
+        {
+          "id": "RateControl",
+          "label": "Rate control",
+          "kind": "choice",
+          "default": "CRF",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "CRF",
+              "label": "Constant quality"
+            },
+            {
+              "value": "Bitrate",
+              "label": "Target bitrate"
+            }
+          ]
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "description": "Lower is better. 18 is visually lossless, 28 is small.",
+          "kind": "range",
+          "default": "23",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'CRF'"
+        },
+        {
+          "id": "VideoBitrate",
+          "label": "Video bitrate",
+          "kind": "integer",
+          "default": "4000",
+          "unit": "kbit/s",
+          "minimum": 100,
+          "maximum": 100000,
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy' && RateControl == 'Bitrate'"
+        },
+        {
+          "id": "Preset",
+          "label": "Encoder speed",
+          "description": "Slower presets give smaller files at the same quality.",
+          "kind": "choice",
+          "default": "medium",
+          "group": "Video",
+          "visibleWhen": "VideoCodec == 'libx264' || VideoCodec == 'libx265'",
+          "choices": [
+            {
+              "value": "ultrafast"
+            },
+            {
+              "value": "superfast"
+            },
+            {
+              "value": "veryfast"
+            },
+            {
+              "value": "faster"
+            },
+            {
+              "value": "fast"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "slow"
+            },
+            {
+              "value": "slower"
+            },
+            {
+              "value": "veryslow"
+            }
+          ]
+        },
+        {
+          "id": "Scale",
+          "label": "Height",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "2160",
+              "label": "2160 (4K)"
+            },
+            {
+              "value": "1440"
+            },
+            {
+              "value": "1080"
+            },
+            {
+              "value": "720"
+            },
+            {
+              "value": "480"
+            },
+            {
+              "value": "360"
+            }
+          ]
+        },
+        {
+          "id": "FrameRate",
+          "label": "Frame rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "fps",
+          "group": "Video",
+          "visibleWhen": "VideoCodec != 'copy'",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "24"
+            },
+            {
+              "value": "25"
+            },
+            {
+              "value": "30"
+            },
+            {
+              "value": "50"
+            },
+            {
+              "value": "60"
+            }
+          ]
+        },
+        {
+          "id": "AudioCodec",
+          "label": "Audio",
+          "kind": "choice",
+          "default": "aac",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "aac",
+              "label": "AAC"
+            },
+            {
+              "value": "copy",
+              "label": "Copy without re-encoding"
+            },
+            {
+              "value": "none",
+              "label": "Remove audio"
+            }
+          ]
+        },
+        {
+          "id": "AudioBitrate",
+          "label": "Audio bitrate",
+          "kind": "choice",
+          "default": "160",
+          "unit": "kbit/s",
+          "group": "Audio",
+          "visibleWhen": "AudioCodec == 'aac'",
+          "choices": [
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v {VideoCodec}"
+        },
+        {
+          "value": "-crf {Crf}",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && (VideoCodec == 'libx264' || VideoCodec == 'libx265')"
+        },
+        {
+          "value": "-cq {Crf} -b:v 0",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && (VideoCodec == 'h264_nvenc' || VideoCodec == 'hevc_nvenc')",
+          "comment": "NVENC spells constant quality differently."
+        },
+        {
+          "value": "-global_quality {Crf}",
+          "when": "VideoCodec != 'copy' && RateControl == 'CRF' && VideoCodec == 'h264_qsv'"
+        },
+        {
+          "value": "-b:v {VideoBitrate}k",
+          "when": "VideoCodec != 'copy' && RateControl == 'Bitrate'"
+        },
+        {
+          "value": "-preset {Preset}",
+          "when": "VideoCodec == 'libx264' || VideoCodec == 'libx265'"
+        },
+        {
+          "value": "-pix_fmt yuv420p",
+          "when": "VideoCodec == 'libx264'",
+          "comment": "Widest player compatibility."
+        },
+        {
+          "value": "-tag:v hvc1",
+          "when": "VideoCodec == 'libx265' || VideoCodec == 'hevc_nvenc'",
+          "comment": "Lets Apple players open HEVC in MP4."
+        },
+        {
+          "value": "-vf scale=-2:{Scale}",
+          "when": "VideoCodec != 'copy' && Scale != 'Keep'"
+        },
+        {
+          "value": "-r {FrameRate}",
+          "when": "VideoCodec != 'copy' && FrameRate != 'Keep'"
+        },
+        {
+          "value": "-c:a aac -b:a {AudioBitrate}k",
+          "when": "AudioCodec == 'aac'"
+        },
+        {
+          "value": "-c:a copy",
+          "when": "AudioCodec == 'copy'"
+        },
+        {
+          "value": "-an",
+          "when": "AudioCodec == 'none'"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ]
+    },
+    {
+      "id": "mp4-mute",
+      "label": "MP4 without sound",
+      "outputExtension": "mp4",
+      "category": "Video",
+      "description": "The same picture with the audio track removed.",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Reencode",
+          "label": "Re-encode the picture",
+          "kind": "boolean",
+          "default": "true",
+          "description": "Off copies the picture untouched, which is instant but only works when it is already H.264 or H.265."
+        },
+        {
+          "id": "Crf",
+          "label": "Quality (CRF)",
+          "kind": "range",
+          "default": "20",
+          "minimum": 0,
+          "maximum": 51,
+          "step": 1,
+          "visibleWhen": "Reencode"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-an"
+        },
+        {
+          "value": "-c:v libx264 -crf {Crf} -preset veryfast -pix_fmt yuv420p",
+          "when": "Reencode"
+        },
+        {
+          "value": "-c:v copy",
+          "when": "!Reencode"
+        },
+        {
+          "value": "-movflags +faststart"
+        }
+      ]
+    },
+    {
+      "id": "mov-prores",
+      "label": "ProRes (MOV, for editing)",
+      "outputExtension": "mov",
+      "category": "Video",
+      "description": "Large files that every editing program scrubs through smoothly.",
+      "inputExtensions": [
+        "$video",
+        "gif",
+        "apng",
+        "webp"
+      ],
+      "options": [
+        {
+          "id": "Profile",
+          "label": "Profile",
+          "kind": "choice",
+          "default": "2",
+          "choices": [
+            {
+              "value": "0",
+              "label": "Proxy"
+            },
+            {
+              "value": "1",
+              "label": "LT"
+            },
+            {
+              "value": "2",
+              "label": "Standard"
+            },
+            {
+              "value": "3",
+              "label": "HQ"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-c:v prores_ks -profile:v {Profile} -pix_fmt yuv422p10le -c:a pcm_s16le"
+        }
+      ]
+    },
+    {
+      "id": "3gp",
+      "label": "3GP (old phones)",
+      "outputExtension": "3gp",
+      "category": "Video",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "-vf scale=352:288:force_original_aspect_ratio=decrease,pad=352:288:(ow-iw)/2:(oh-ih)/2 -r 15",
+          "comment": "H.263 only takes a handful of fixed sizes, so the picture is fitted into CIF."
+        },
+        {
+          "value": "-c:v h263 -q:v 5 -c:a libopencore_amrnb -ar 8000 -ac 1 -b:a 12.2k"
+        }
+      ]
+    },
+    {
+      "id": "flv",
+      "label": "FLV (Flash video)",
+      "outputExtension": "flv",
+      "category": "Video",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "-c:v libx264 -crf 23 -preset medium -pix_fmt yuv420p -c:a aac -b:a 128k -ar 44100"
+        }
+      ]
+    },
+    {
+      "id": "frame-jpg",
+      "label": "JPEG (single frame)",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "description": "Grabs one frame as a JPEG, smaller than the PNG.",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Time",
+          "label": "Position",
+          "description": "Where to take the frame, as hh:mm:ss.",
+          "kind": "text",
+          "default": "00:00:01"
+        },
+        {
+          "id": "Width",
+          "label": "Width",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "px",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1920"
+            },
+            {
+              "value": "1280"
+            },
+            {
+              "value": "640"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-ss {Time} -frames:v 1 -update 1 -an",
+          "comment": "Placed after -i so the seek is exact rather than fast."
+        },
+        {
+          "value": "-vf scale={Width}:-2",
+          "when": "Width != 'Keep'"
+        },
+        {
+          "value": "-q:v 2"
+        }
+      ]
+    },
+    {
+      "id": "m4r",
+      "label": "iPhone ringtone (M4R)",
+      "outputExtension": "m4r",
+      "category": "Audio",
+      "description": "AAC in the container an iPhone takes as a ringtone, cut to length.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Start",
+          "label": "Start at",
+          "kind": "text",
+          "default": "00:00:00",
+          "description": "As hh:mm:ss."
+        },
+        {
+          "id": "Length",
+          "label": "Length",
+          "kind": "integer",
+          "default": "30",
+          "unit": "s",
+          "minimum": 1,
+          "maximum": 40,
+          "description": "iOS refuses ringtones longer than 40 seconds."
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-ss {Start} -t {Length} -vn -c:a aac -b:a 256k -f ipod"
+        }
+      ]
+    },
+    {
+      "id": "mp2",
+      "label": "MP2",
+      "outputExtension": "mp2",
+      "category": "Audio",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [
+        {
+          "id": "Bitrate",
+          "label": "Bitrate",
+          "kind": "choice",
+          "default": "192",
+          "unit": "kbit/s",
+          "choices": [
+            {
+              "value": "64"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "128"
+            },
+            {
+              "value": "160"
+            },
+            {
+              "value": "192"
+            },
+            {
+              "value": "256"
+            },
+            {
+              "value": "320"
+            }
+          ]
+        },
+        {
+          "id": "SampleRate",
+          "label": "Sample rate",
+          "kind": "choice",
+          "default": "Keep",
+          "unit": "Hz",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "22050"
+            },
+            {
+              "value": "44100"
+            },
+            {
+              "value": "48000"
+            }
+          ]
+        },
+        {
+          "id": "Channels",
+          "label": "Channels",
+          "kind": "choice",
+          "default": "Keep",
+          "group": "Audio",
+          "choices": [
+            {
+              "value": "Keep",
+              "label": "Keep original"
+            },
+            {
+              "value": "1",
+              "label": "Mono"
+            },
+            {
+              "value": "2",
+              "label": "Stereo"
+            }
+          ]
+        },
+        {
+          "id": "KeepMetadata",
+          "label": "Keep metadata",
+          "kind": "boolean",
+          "default": "true",
+          "group": "Audio"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-vn -c:a mp2 -b:a {Bitrate}k"
+        },
+        {
+          "value": "-ar {SampleRate}",
+          "when": "SampleRate != 'Keep'"
+        },
+        {
+          "value": "-ac {Channels}",
+          "when": "Channels != 'Keep'"
+        },
+        {
+          "value": "-map_metadata -1",
+          "when": "!KeepMetadata"
+        }
+      ]
+    },
+    {
+      "id": "amr",
+      "label": "AMR (voice)",
+      "outputExtension": "amr",
+      "category": "Audio",
+      "description": "The phone voice codec: tiny, mono and meant for speech.",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "-vn -c:a libopencore_amrnb -ar 8000 -ac 1 -b:a 12.2k"
+        }
+      ]
+    },
+    {
+      "id": "wv",
+      "label": "WavPack (lossless)",
+      "outputExtension": "wv",
+      "category": "Audio",
+      "inputExtensions": [
+        "$audio",
+        "$video"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "-vn -c:a wavpack"
+        }
+      ]
+    },
+    {
+      "id": "audio-copy",
+      "label": "Audio track, untouched (MKA)",
+      "outputExtension": "mka",
+      "category": "Audio",
+      "description": "Takes the sound out of a video exactly as it is, without re-encoding. Instant and lossless.",
+      "inputExtensions": [
+        "$video"
+      ],
+      "options": [],
+      "arguments": [
+        {
+          "value": "-vn -map 0:a:0 -c:a copy"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1295 @@
+{
+  "id": "pipeline",
+  "name": "Multi-step",
+  "description": "Conversions that pass through an intermediate format, so a document can reach an image and an image can reach a document.",
+  "kind": "pipeline",
+  "targets": [
+    {
+      "id": "text-pdf",
+      "label": "PDF",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Through Microsoft Word, or LibreOffice on a machine without it.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-pdf",
+            "libreoffice/pdf"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-pdf",
+      "label": "PDF",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Through Microsoft Excel, or LibreOffice on a machine without it.",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-pdf",
+            "libreoffice/pdf"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-pdf",
+      "label": "PDF",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Through Microsoft PowerPoint, or LibreOffice on a machine without it.",
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-pdf",
+            "libreoffice/pdf"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-docx",
+      "label": "Word (DOCX)",
+      "outputExtension": "docx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-docx",
+            "libreoffice/docx"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-odt",
+      "label": "OpenDocument text (ODT)",
+      "outputExtension": "odt",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-odt",
+            "libreoffice/odt"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-rtf",
+      "label": "Rich text (RTF)",
+      "outputExtension": "rtf",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-rtf",
+            "libreoffice/rtf"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-html",
+      "label": "HTML",
+      "outputExtension": "html",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-html",
+            "libreoffice/html"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-txt",
+      "label": "Plain text",
+      "outputExtension": "txt",
+      "category": "Document",
+      "description": "Drops all formatting and keeps the words.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-txt",
+            "libreoffice/txt"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-xlsx",
+      "label": "Excel (XLSX)",
+      "outputExtension": "xlsx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-xlsx",
+            "libreoffice/xlsx"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-ods",
+      "label": "OpenDocument spreadsheet (ODS)",
+      "outputExtension": "ods",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-ods",
+            "libreoffice/ods"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-csv",
+      "label": "CSV",
+      "outputExtension": "csv",
+      "category": "Document",
+      "description": "One table, so the first or active sheet is what gets written.",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-csv",
+            "libreoffice/csv"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-html",
+      "label": "HTML",
+      "outputExtension": "html",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-html",
+            "libreoffice/html"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-pptx",
+      "label": "PowerPoint (PPTX)",
+      "outputExtension": "pptx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-pptx",
+            "libreoffice/pptx"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-odp",
+      "label": "OpenDocument presentation (ODP)",
+      "outputExtension": "odp",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-odp",
+            "libreoffice/odp"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-png",
+      "label": "PNG (via PDF)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": "Lays the document out first, so the picture matches the printed page.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/png"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        }
+      ]
+    },
+    {
+      "id": "text-jpg",
+      "label": "JPEG (via PDF)",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/jpg"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        }
+      ]
+    },
+    {
+      "id": "text-tiff",
+      "label": "TIFF (via PDF)",
+      "outputExtension": "tiff",
+      "category": "Image",
+      "description": "Every page in one multi-page TIFF.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/tiff"
+          ],
+          "options": {
+            "Resolution": "{Resolution}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sheet-png",
+      "label": "PNG (via PDF)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": "A spreadsheet laid out as it would print, then rasterised.",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/png"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        }
+      ]
+    },
+    {
+      "id": "sheet-jpg",
+      "label": "JPEG (via PDF)",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/jpg"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        }
+      ]
+    },
+    {
+      "id": "sheet-tiff",
+      "label": "TIFF (via PDF)",
+      "outputExtension": "tiff",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/tiff"
+          ],
+          "options": {
+            "Resolution": "{Resolution}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slides-png",
+      "label": "PNG (via PDF)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/png"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        }
+      ]
+    },
+    {
+      "id": "slides-jpg",
+      "label": "JPEG (via PDF)",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/jpg"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        }
+      ]
+    },
+    {
+      "id": "sheet-text",
+      "label": "Plain text (via PDF)",
+      "outputExtension": "txt",
+      "category": "Document",
+      "description": "The words as they appear on the laid out page, not the raw cells.",
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/txt"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-text",
+      "label": "Plain text (via PDF)",
+      "outputExtension": "txt",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-pdf",
+            "libreoffice/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/txt"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "image-doc-pdf",
+      "label": "PDF (searchable layout)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "An image wrapped in a PDF and then recompressed, which is far smaller than the wrap alone.",
+      "inputExtensions": [
+        "$image"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "imagemagick/pdf"
+          ]
+        },
+        {
+          "targets": [
+            "ghostscript/pdf"
+          ],
+          "options": {
+            "Profile": "{Profile}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Profile",
+          "label": "Profile",
+          "kind": "choice",
+          "default": "ebook",
+          "choices": [
+            {
+              "value": "screen",
+              "label": "Screen (72 dpi, smallest)"
+            },
+            {
+              "value": "ebook",
+              "label": "E-book (150 dpi)"
+            },
+            {
+              "value": "printer",
+              "label": "Printer (300 dpi)"
+            },
+            {
+              "value": "prepress",
+              "label": "Prepress"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pdf-webp",
+      "label": "WebP (via PNG)",
+      "outputExtension": "webp",
+      "category": "Image",
+      "description": "A page of a PDF as a WebP, which is a fraction of the size of the PNG.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "ghostscript/png"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        },
+        {
+          "targets": [
+            "imagemagick/webp"
+          ],
+          "options": {
+            "Quality": "{Quality}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "85",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "pdf-avif",
+      "label": "AVIF (via PNG)",
+      "outputExtension": "avif",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "ghostscript/png"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        },
+        {
+          "targets": [
+            "imagemagick/avif"
+          ],
+          "options": {
+            "Quality": "{Quality}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "70",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "pdf-ico",
+      "label": "Icon (via PNG)",
+      "outputExtension": "ico",
+      "category": "Image",
+      "description": null,
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "ghostscript/png"
+          ],
+          "options": {
+            "Resolution": "{Resolution}",
+            "Page": "{Page}"
+          }
+        },
+        {
+          "targets": [
+            "imagemagick/ico"
+          ],
+          "options": {
+            "IconSizes": "{IconSizes}"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000,
+          "description": "Which page of the document, once it has been laid out."
+        },
+        {
+          "id": "IconSizes",
+          "label": "Sizes",
+          "kind": "text",
+          "default": "16, 32, 48, 256"
+        }
+      ]
+    },
+    {
+      "id": "text-pdfa",
+      "label": "PDF/A",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "The archival flavour of PDF, with every font embedded. Through Word, or LibreOffice without it.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-pdf",
+            "libreoffice/pdf"
+          ],
+          "options": {
+            "PdfA": "true"
+          }
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-doc",
+      "label": "Word 97-2003 (DOC)",
+      "outputExtension": "doc",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-doc",
+            "libreoffice/doc"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-docm",
+      "label": "Word with macros (DOCM)",
+      "outputExtension": "docm",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-docm",
+            "libreoffice/docm"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-dotx",
+      "label": "Word template (DOTX)",
+      "outputExtension": "dotx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/word-dotx",
+            "libreoffice/dotx"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "text-epub",
+      "label": "EPUB e-book",
+      "outputExtension": "epub",
+      "category": "Document",
+      "description": "Needs LibreOffice; Word cannot write EPUB.",
+      "inputExtensions": [
+        "$text"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "libreoffice/epub"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-xls",
+      "label": "Excel 97-2003 (XLS)",
+      "outputExtension": "xls",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-xls",
+            "libreoffice/xls"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-xlsm",
+      "label": "Excel with macros (XLSM)",
+      "outputExtension": "xlsm",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-xlsm",
+            "libreoffice/xlsm"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "sheet-xltx",
+      "label": "Excel template (XLTX)",
+      "outputExtension": "xltx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$spreadsheet"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/excel-xltx",
+            "libreoffice/xltx"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-ppt",
+      "label": "PowerPoint 97-2003 (PPT)",
+      "outputExtension": "ppt",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-ppt",
+            "libreoffice/ppt"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-pptm",
+      "label": "PowerPoint with macros (PPTM)",
+      "outputExtension": "pptm",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-pptm",
+            "libreoffice/pptm"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-ppsx",
+      "label": "PowerPoint show (PPSX)",
+      "outputExtension": "ppsx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-ppsx",
+            "libreoffice/ppsx"
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "id": "slides-potx",
+      "label": "PowerPoint template (POTX)",
+      "outputExtension": "potx",
+      "category": "Document",
+      "description": null,
+      "inputExtensions": [
+        "$presentation"
+      ],
+      "steps": [
+        {
+          "targets": [
+            "office/powerpoint-potx",
+            "libreoffice/potx"
+          ]
+        }
+      ],
+      "options": []
+    }
+  ]
+}

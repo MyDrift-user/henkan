@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The Explorer context menu handler.
+
+    Explorer loads context menu COM servers through a system surrogate that
+    expects a native DLL exporting DllGetClassObject. A managed assembly cannot
+    be loaded that way, so this project is compiled with NativeAOT into a real
+    DLL. `dotnet build` produces the ordinary managed assembly for IDE and CI
+    purposes; only `dotnet publish` produces the native DLL the package uses.
+
+    It deliberately has no reference to Henkan.Core. It reads one small JSON
+    file the app maintains and launches the app; everything else stays out.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Henkan.ShellExtension</RootNamespace>
+    <AssemblyName>Henkan.ShellExtension</AssemblyName>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platforms>x64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <SelfContained>true</SelfContained>
+    <PublishDir>bin\publish\</PublishDir>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <StackTraceSupport>false</StackTraceSupport>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+    <EventSourceSupport>false</EventSourceSupport>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+
+</Project>

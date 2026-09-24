@@ -1,0 +1,458 @@
+{
+  "id": "ghostscript",
+  "name": "Ghostscript",
+  "description": "PDF and PostScript processing through the bundled Ghostscript.",
+  "kind": "process",
+  "executable": {
+    "fileName": "gswin64c.exe",
+    "bundledPath": "gs/gswin64c.exe",
+    "searchPaths": [
+      "%ProgramFiles%\\gs\\gs10.05.1\\bin\\gswin64c.exe",
+      "%ProgramFiles%\\gs\\gs10.04.0\\bin\\gswin64c.exe",
+      "%ProgramFiles%\\gs\\gs10.03.1\\bin\\gswin64c.exe"
+    ],
+    "probeArguments": [
+      "--version"
+    ],
+    "versionPattern": "(\\d+\\.\\d+(?:\\.\\d+)?)",
+    "homepageUrl": "https://ghostscript.com/"
+  },
+  "successExitCodes": [
+    0
+  ],
+  "argumentPrefix": [
+    {
+      "value": "-dNOPAUSE -dBATCH -dQUIET -dSAFER"
+    }
+  ],
+  "argumentSuffix": [
+    {
+      "value": "-sOutputFile={output}",
+      "comment": "Ghostscript wants the path glued to the switch. Quoting is handled by the engine, not the template."
+    },
+    {
+      "value": "{inputs}",
+      "comment": "One argument per file: a single input usually, every selected PDF when merging."
+    }
+  ],
+  "targets": [
+    {
+      "id": "pdf",
+      "label": "PDF (recompressed)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Re-encodes images and fonts to shrink a PDF, or to normalise one that misbehaves.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Profile",
+          "label": "Profile",
+          "kind": "choice",
+          "default": "ebook",
+          "choices": [
+            {
+              "value": "screen",
+              "label": "Screen (72 dpi, smallest)"
+            },
+            {
+              "value": "ebook",
+              "label": "E-book (150 dpi)"
+            },
+            {
+              "value": "printer",
+              "label": "Printer (300 dpi)"
+            },
+            {
+              "value": "prepress",
+              "label": "Prepress (300 dpi, colour preserved)"
+            },
+            {
+              "value": "default",
+              "label": "Default (no downsampling)"
+            }
+          ]
+        },
+        {
+          "id": "Compatibility",
+          "label": "PDF version",
+          "kind": "choice",
+          "default": "1.7",
+          "choices": [
+            {
+              "value": "1.4"
+            },
+            {
+              "value": "1.5"
+            },
+            {
+              "value": "1.6"
+            },
+            {
+              "value": "1.7"
+            }
+          ]
+        },
+        {
+          "id": "Grayscale",
+          "label": "Convert to grayscale",
+          "kind": "boolean",
+          "default": "false"
+        },
+        {
+          "id": "ExtraArguments",
+          "label": "Extra arguments",
+          "kind": "text",
+          "group": "Advanced",
+          "advanced": true
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=pdfwrite -dCompatibilityLevel={Compatibility} -dPDFSETTINGS=/{Profile}"
+        },
+        {
+          "value": "-sColorConversionStrategy=Gray -dProcessColorModel=/DeviceGray",
+          "when": "Grayscale"
+        },
+        {
+          "value": "{ExtraArguments}",
+          "splitAfterExpansion": true
+        }
+      ]
+    },
+    {
+      "id": "png",
+      "label": "PNG (first page)",
+      "outputExtension": "png",
+      "category": "Image",
+      "description": "Rasterises the first page of a PDF or PostScript file.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        {
+          "id": "Transparent",
+          "label": "Transparent background",
+          "kind": "boolean",
+          "default": "false"
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=png16m",
+          "when": "!Transparent"
+        },
+        {
+          "value": "-sDEVICE=pngalpha",
+          "when": "Transparent"
+        },
+        {
+          "value": "-r{Resolution} -dFirstPage={Page} -dLastPage={Page}"
+        }
+      ]
+    },
+    {
+      "id": "jpg",
+      "label": "JPEG (single page)",
+      "outputExtension": "jpg",
+      "category": "Image",
+      "description": "Rasterises one page of a PDF or PostScript file.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "150",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "72"
+            },
+            {
+              "value": "96"
+            },
+            {
+              "value": "150"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        {
+          "id": "Quality",
+          "label": "Quality",
+          "kind": "range",
+          "default": "90",
+          "minimum": 1,
+          "maximum": 100,
+          "step": 1
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=jpeg -dJPEGQ={Quality}"
+        },
+        {
+          "value": "-r{Resolution} -dFirstPage={Page} -dLastPage={Page}"
+        }
+      ]
+    },
+    {
+      "id": "tiff",
+      "label": "TIFF (all pages)",
+      "outputExtension": "tiff",
+      "category": "Image",
+      "description": "Every page in one multi-page TIFF, which is what document scanners and fax gateways expect.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Resolution",
+          "label": "Resolution",
+          "kind": "choice",
+          "default": "300",
+          "unit": "dpi",
+          "choices": [
+            {
+              "value": "150"
+            },
+            {
+              "value": "200"
+            },
+            {
+              "value": "300"
+            },
+            {
+              "value": "600"
+            }
+          ]
+        },
+        {
+          "id": "Colour",
+          "label": "Colour",
+          "kind": "choice",
+          "default": "tiff24nc",
+          "choices": [
+            {
+              "value": "tiff24nc",
+              "label": "Full colour"
+            },
+            {
+              "value": "tiffgray",
+              "label": "Grayscale"
+            },
+            {
+              "value": "tiffg4",
+              "label": "Black and white (CCITT G4)"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE={Colour} -r{Resolution}"
+        }
+      ]
+    },
+    {
+      "id": "ps",
+      "label": "PostScript",
+      "outputExtension": "ps",
+      "category": "Document",
+      "description": "For printers and workflows that take PostScript and nothing else.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Level",
+          "label": "Language level",
+          "kind": "choice",
+          "default": "3",
+          "choices": [
+            {
+              "value": "1"
+            },
+            {
+              "value": "2"
+            },
+            {
+              "value": "3"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=ps2write -dLanguageLevel={Level}"
+        }
+      ]
+    },
+    {
+      "id": "eps",
+      "label": "EPS",
+      "outputExtension": "eps",
+      "category": "Document",
+      "description": "Encapsulated PostScript, for placing a single page inside another document.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Page",
+          "label": "Page",
+          "kind": "integer",
+          "default": "1",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=eps2write -dFirstPage={Page} -dLastPage={Page}"
+        }
+      ]
+    },
+    {
+      "id": "pdfa",
+      "label": "PDF/A (archival)",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Embeds every font and pins the colour handling, so the file still renders the same in twenty years.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Part",
+          "label": "Conformance",
+          "kind": "choice",
+          "default": "2",
+          "choices": [
+            {
+              "value": "1",
+              "label": "PDF/A-1"
+            },
+            {
+              "value": "2",
+              "label": "PDF/A-2"
+            },
+            {
+              "value": "3",
+              "label": "PDF/A-3"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=pdfwrite -dPDFA={Part} -dPDFACompatibilityPolicy=1"
+        },
+        {
+          "value": "-sColorConversionStrategy=UseDeviceIndependentColor"
+        }
+      ]
+    },
+    {
+      "id": "txt",
+      "label": "Plain text",
+      "outputExtension": "txt",
+      "category": "Document",
+      "description": "Pulls out the text a PDF already carries. It cannot read a scan, which has no text to find.",
+      "inputExtensions": [
+        "$postscript"
+      ],
+      "options": [
+        {
+          "id": "Encoding",
+          "label": "Encoding",
+          "kind": "choice",
+          "default": "3",
+          "choices": [
+            {
+              "value": "3",
+              "label": "UTF-8"
+            },
+            {
+              "value": "2",
+              "label": "UTF-16"
+            }
+          ]
+        }
+      ],
+      "arguments": [
+        {
+          "value": "-sDEVICE=txtwrite -dTextFormat={Encoding}",
+          "comment": "Format 3 is plain UTF-8 and 2 the same in UTF-16. The lower numbers emit XML with per-glyph positions, which is not what a .txt file should hold."
+        }
+      ]
+    },
+    {
+      "id": "merge",
+      "label": "One PDF from all selected PDFs",
+      "outputExtension": "pdf",
+      "category": "Document",
+      "description": "Joins the selected PDFs in the order they were selected, without recompressing them.",
+      "inputExtensions": [
+        "pdf"
+      ],
+      "combinesInputs": true,
+      "options": [],
+      "arguments": [
+        {
+          "value": "-sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS=/default"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
+  xmlns:desktop5="http://schemas.microsoft.com/appx/manifest/desktop/windows10/5"
+  IgnorableNamespaces="uap uap3 rescap com desktop desktop4 desktop5">
+
+  <Identity
+    Name="MyDrift.Henkan"
+    Publisher="CN=MyDrift"
+    Version="0.1.0.0" />
+
+  <Properties>
+    <DisplayName>Henkan</DisplayName>
+    <PublisherDisplayName>MyDrift</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="Henkan"
+        Description="Convert files with presets you define yourself."
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+
+      <Extensions>
+        <!-- Lets the app be launched as "henkan" from a command prompt or Run box. -->
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="Henkan.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="henkan.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+
+        <!-- Windows notifications. AppNotificationManager.Register fails with
+             "element not found" unless the package declares an activator for
+             them, even when the notification is never clicked. The CLSID here is
+             the one NotificationPresenter names and the two must stay in step. -->
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="Henkan.exe" DisplayName="Henkan notifications" Arguments="----AppNotificationActivated:">
+              <com:Class Id="A3C1E1E6-5B0C-4C1E-9F2D-7E5B4A9C0D31" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+
+        <desktop:Extension Category="windows.toastNotificationActivation">
+          <desktop:ToastNotificationActivation ToastActivatorCLSID="A3C1E1E6-5B0C-4C1E-9F2D-7E5B4A9C0D31" />
+        </desktop:Extension>
+
+        <!-- The Explorer context menu. The class lives in Henkan.ShellExtension.dll,
+             a NativeAOT COM server hosted out of process by the system surrogate,
+             so Explorer never loads the .NET runtime itself. The GUID is the one
+             in Henkan.ShellExtension/HenkanCommand.cs and must stay in step. -->
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:SurrogateServer DisplayName="Henkan context menu">
+              <com:Class Id="7A3E5D2C-4B1F-4E8A-9C6D-2F1B8E4A7D30" Path="Henkan.ShellExtension.dll" ThreadingModel="STA" />
+            </com:SurrogateServer>
+          </com:ComServer>
+        </com:Extension>
+
+        <desktop4:Extension Category="windows.fileExplorerContextMenus">
+          <desktop4:FileExplorerContextMenus>
+            <desktop5:ItemType Type="*">
+              <desktop5:Verb Id="Henkan" Clsid="7A3E5D2C-4B1F-4E8A-9C6D-2F1B8E4A7D30" />
+            </desktop5:ItemType>
+
+            <!-- "*" covers files only. A folder is a separate item type, and
+                 without it the handler is never asked about one at all. -->
+            <desktop5:ItemType Type="Directory">
+              <desktop5:Verb Id="Henkan" Clsid="7A3E5D2C-4B1F-4E8A-9C6D-2F1B8E4A7D30" />
+            </desktop5:ItemType>
+          </desktop4:FileExplorerContextMenus>
+        </desktop4:Extension>
+      </Extensions>
+    </Application>
+
+    <!-- The command line front end. A second Application rather than another
+         alias on the first: only one appExecutionAlias extension is allowed per
+         application, and an alias always resolves to that application's own
+         executable. AppListEntry="none" keeps it out of the Start menu. -->
+    <Application Id="Cli"
+      Executable="henkanc.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        AppListEntry="none"
+        DisplayName="Henkan command line"
+        Description="Convert files, and inspect what converts what, from a console."
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png" />
+
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="henkanc.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="henkanc.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

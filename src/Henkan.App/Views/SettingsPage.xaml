@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Henkan.App.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Henkan.App.ViewModels"
+    NavigationCacheMode="Required">
+
+    <ScrollViewer Padding="{StaticResource PagePadding}">
+        <StackPanel Spacing="16" MaxWidth="820" HorizontalAlignment="Left">
+            <StackPanel>
+                <TextBlock Text="Settings" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="Application-wide preferences. Everything about a particular conversion is set on the Conversions page." Style="{StaticResource PageSubtitleStyle}" />
+            </StackPanel>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Conversion" FontWeight="SemiBold" />
+
+                    <NumberBox
+                        Header="Conversions running at the same time"
+                        Value="{x:Bind ViewModel.MaxParallelConversions, Mode=TwoWay}"
+                        Minimum="1" Maximum="64"
+                        SpinButtonPlacementMode="Compact" />
+                    <TextBlock Style="{StaticResource CaptionStyle}">
+                        <Run Text="This machine has" />
+                        <Run Text="{x:Bind ViewModel.ProcessorCount}" />
+                        <Run Text="logical processors. ffmpeg and the other tools already use several threads each, so half that number is a sensible ceiling." />
+                    </TextBlock>
+
+                    <TextBox
+                        Header="Where results go, for new menu entries"
+                        Text="{x:Bind ViewModel.DefaultOutputPathTemplate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource CodeTextBoxStyle}" />
+
+                    <ComboBox
+                        Header="Default when the output already exists"
+                        ItemsSource="{x:Bind vm:SettingsViewModel.ConflictPolicyLabels}"
+                        SelectedIndex="{x:Bind ViewModel.DefaultConflictPolicyIndex, Mode=TwoWay}"
+                        HorizontalAlignment="Stretch" />
+
+                    <ToggleSwitch Header="Write a log file for every job" IsOn="{x:Bind ViewModel.WriteJobLogs, Mode=TwoWay}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Progress" FontWeight="SemiBold" />
+                    <TextBlock
+                        Text="How a conversion started from the Explorer menu reports itself. The application window is not opened for one either way."
+                        Style="{StaticResource CaptionStyle}"
+                        TextWrapping="Wrap" />
+
+                    <ComboBox
+                        Header="Show progress as"
+                        ItemsSource="{x:Bind vm:SettingsViewModel.ProgressDisplayLabels}"
+                        SelectedIndex="{x:Bind ViewModel.ProgressDisplayIndex, Mode=TwoWay}"
+                        HorizontalAlignment="Stretch" />
+
+                    <ComboBox
+                        Header="Corner the cards stack in"
+                        ItemsSource="{x:Bind vm:SettingsViewModel.ToastCornerLabels}"
+                        SelectedIndex="{x:Bind ViewModel.ToastCornerIndex, Mode=TwoWay}"
+                        HorizontalAlignment="Stretch"
+                        IsEnabled="{x:Bind ViewModel.ShowsToasts, Mode=OneWay}" />
+
+                    <NumberBox
+                        Header="Wait this long before showing anything (seconds)"
+                        Value="{x:Bind ViewModel.ProgressDelaySeconds, Mode=TwoWay}"
+                        Minimum="0" Maximum="10" SmallChange="0.1"
+                        SpinButtonPlacementMode="Compact" />
+                    <TextBlock
+                        Text="A conversion that finishes inside this is never shown at all. Without it, a small image flashes a window on screen and takes it away again before it can be read."
+                        Style="{StaticResource CaptionStyle}"
+                        TextWrapping="Wrap" />
+
+                    <NumberBox
+                        Header="Keep a finished card up for (seconds)"
+                        Value="{x:Bind ViewModel.ToastLingerSeconds, Mode=TwoWay}"
+                        Minimum="0.5" Maximum="60" SmallChange="0.5"
+                        SpinButtonPlacementMode="Compact"
+                        IsEnabled="{x:Bind ViewModel.ShowsToasts, Mode=OneWay}" />
+
+                    <ToggleSwitch
+                        Header="Keep it up until dismissed, even when everything worked"
+                        IsOn="{x:Bind ViewModel.StayOpenWhenFinished, Mode=TwoWay}" />
+                    <TextBlock
+                        Text="A failure always stays until you dismiss it, whatever this says."
+                        Style="{StaticResource CaptionStyle}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Appearance" FontWeight="SemiBold" />
+                    <ComboBox
+                        Header="Theme"
+                        ItemsSource="{x:Bind vm:SettingsViewModel.ThemeLabels}"
+                        SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}"
+                        HorizontalAlignment="Stretch" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Bundled tools" FontWeight="SemiBold" />
+                    <TextBlock Text="{x:Bind ViewModel.ToolsHint}" TextWrapping="Wrap" />
+                    <TextBlock Text="{x:Bind ViewModel.ToolsFolder}" Style="{StaticResource MonospaceStyle}" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Save" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind ViewModel.SaveCommand}" />
+                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" VerticalAlignment="Center" Style="{StaticResource CaptionStyle}" />
+            </StackPanel>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="About" FontWeight="SemiBold" />
+                    <TextBlock>
+                        <Run Text="Henkan" />
+                        <Run Text="{x:Bind ViewModel.Version}" />
+                        <Run Text=", GPL-3.0-or-later." />
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource CaptionStyle}">
+                        <Run Text="Data folder:" />
+                        <Run Text="{x:Bind ViewModel.DataFolder}" FontFamily="Cascadia Mono, Consolas" />
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Open data folder" Command="{x:Bind ViewModel.OpenDataFolderCommand}" />
+                        <Button Content="Source on GitHub" Command="{x:Bind ViewModel.OpenRepositoryCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,88 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <RootNamespace>Henkan.App</RootNamespace>
+    <AssemblyName>Henkan</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\Henkan.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <UseRidGraph>true</UseRidGraph>
+    <SelfContained>false</SelfContained>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Pass -p:Unpackaged=true to run without MSIX registration. The Explorer
+       context menu needs the package, everything else works either way. -->
+  <PropertyGroup Condition="'$(Unpackaged)' == 'true'">
+    <WindowsPackageType>None</WindowsPackageType>
+    <EnableMsixTooling>false</EnableMsixTooling>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Henkan.Core\Henkan.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*.png" />
+    <Content Include="Assets\Henkan.ico" />
+    <Content Include="..\..\LICENSE" Link="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\THIRD-PARTY-NOTICES.md" Link="THIRD-PARTY-NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!-- Bundled tools, when tools/fetch-deps.ps1 has run. Absent by default and
+       the build does not care; the ToolLocator simply reports them missing. -->
+  <ItemGroup Condition="Exists('$(HenkanToolsDir)')">
+    <Content Include="$(HenkanToolsDir)**\*" Link="tools\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The NativeAOT shell extension, when it has been published. Same rule:
+       optional, and the app is complete without it. -->
+  <PropertyGroup>
+    <HenkanShellExtensionDll>$(MSBuildThisFileDirectory)..\Henkan.ShellExtension\bin\publish\Henkan.ShellExtension.dll</HenkanShellExtensionDll>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(HenkanShellExtensionDll)')">
+    <Content Include="$(HenkanShellExtensionDll)" Link="Henkan.ShellExtension.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The command line front end, when it has been built. Same rule as the tools
+       and the shell extension: optional, and the app is complete without it. -->
+  <PropertyGroup>
+    <HenkanCliDir>$(MSBuildThisFileDirectory)..\Henkan.Cli\bin\$(Platform)\$(Configuration)\net10.0-windows\win-x64\</HenkanCliDir>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(HenkanCliDir)henkanc.exe')">
+    <Content Include="$(HenkanCliDir)henkanc.exe" Link="henkanc.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(HenkanCliDir)henkanc.dll" Link="henkanc.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(HenkanCliDir)henkanc.runtimeconfig.json" Link="henkanc.runtimeconfig.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(HenkanCliDir)henkanc.deps.json" Link="henkanc.deps.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Keeps the Visual Studio deploy/debug experience working for a packaged app. -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
+</Project>
