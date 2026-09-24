@@ -129,10 +129,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = '${{ github.ref_name }}'
-          $notes = Join-Path $env:RUNNER_TEMP 'notes.md'
-          Copy-Item ".github/release-notes/$tag.md" $notes
-          Add-Content $notes "`n## Checksums (SHA-256)`n"
-          Get-ChildItem release | ForEach-Object { Add-Content $notes "- ``$($_.Name)``: ``$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())``" }
-
-          gh release create $tag --title "Henkan $env:VERSION" --notes-file $notes (Get-ChildItem release).FullName
+          gh release create $tag --title "Henkan $env:VERSION" --notes-file ".github/release-notes/$tag.md" (Get-ChildItem release).FullName
           if ($LASTEXITCODE -ne 0) { throw 'Could not publish the release.' }
